@@ -1,5 +1,9 @@
-div {
-	display: block;
+#wrapper {
+	position: relative;
+}
+
+#bk, #colors_sketch {
+  position: absolute;
 }
 
 #colors_sketch {

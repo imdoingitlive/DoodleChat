@@ -81,6 +81,11 @@ var __slice = Array.prototype.slice;
     };
     // Custom prototype for sending
     Sketch.prototype.send = function(format) {
+      // Save background
+      this.context.globalCompositeOperation = 'destination-over';
+      this.context.drawImage(bk, 0, 0);
+      this.context.globalCompositeOperation = 'source-over';
+      // Get MIME type
       var mime;
       format || (format = "png");
       if (format === "jpg") {
