@@ -19,10 +19,12 @@
   },
   "homepage": "https://github.com/imdoingitlive/Storyboard#readme",
   "dependencies": {
+    "aws-sdk": "^2.5.0",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "method-override": "^2.3.6",
-    "mysql": "^2.11.1"
+    "mysql": "^2.11.1",
+    "socket.io": "^1.4.8"
   }
 }

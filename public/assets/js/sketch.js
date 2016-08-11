@@ -62,6 +62,10 @@ var __slice = Array.prototype.slice;
           if ($(this).attr('data-download')) {
             sketch.download($(this).attr('data-download'));
           }
+          // Custom listener for sending
+          if ($(this).attr('data-send')) {
+            sketch.send($(this).attr('data-send'));
+          }
           return false;
         });
       }
@@ -74,6 +78,19 @@ var __slice = Array.prototype.slice;
       }
       mime = "image/" + format;
       return window.open(this.el.toDataURL(mime));
+    };
+    // Custom prototype for sending
+    Sketch.prototype.send = function(format) {
+      var mime;
+      format || (format = "png");
+      if (format === "jpg") {
+        format = "jpeg";
+      }
+      mime = "image/" + format;
+      // Save dataURL
+      var dataURL = this.el.toDataURL(mime);
+      // Send dataURL through socket
+      return socket.emit('my sketch', dataURL);
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
@@ -192,3 +209,10 @@ var __slice = Array.prototype.slice;
   // Start the sketching
   $('#colors_sketch').sketch();
 });
+
+// Socket io
+var socket = io.connect();
+
+//socket.on('sketch', function () {
+//  socket.emit('my sketch', { sketch: 'base64' });
+//});

@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
 // Serve static content for the app from the "public" directory in the application directory.
 app.use(express.static(process.cwd() + '/public'));
@@ -23,9 +25,15 @@ app.engine('handlebars', exphbs({
 }));
 app.set('view engine', 'handlebars');
 
-var routes = require('./controllers/storyboard_controller.js');
+// Routing
+var routes = require('./controllers/router');
 app.use('/', routes);
 
+// Socket io
+var socketio = require('./controllers/socketio');
+io.on('connection', socketio.connection);
+
+// Port
 var PORT = process.env.PORT || 3000;
-app.listen(PORT);
+server.listen(PORT);
 console.log('Listening on port: ' + PORT);
