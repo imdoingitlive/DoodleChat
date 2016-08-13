@@ -13,17 +13,19 @@ var socketio = {};
 socketio.connection = function (socket) {
 	// First emit data
   //socket.emit('sketch');
-  // When sketch is sent, receive data and send to AWS
-  socket.on('my sketch', function (dataURL) {
 
-    console.log(dataURL);
+  // When sketch is sent, receive data and send to AWS
+  socket.on('send sketch', function (dataURL,key) {
+
+  	// Create a new buffer for incoming dataURL
     buf = new Buffer(dataURL.replace(/^data:image\/\w+;base64,/, ""),'base64')
 	  var data = {
-	    Key: 'test2', // req.body.userId, 
+	    Key: key,
 	    Body: buf,
 	    ContentEncoding: 'base64',
 	    ContentType: 'image/png'
 	  };
+	  // Send dataURL to s3
 	  s3Bucket.putObject(data, function(err, data){
 	      if (err) { 
 	        console.log(err);
@@ -32,6 +34,12 @@ socketio.connection = function (socket) {
 	        console.log('Succesfully uploaded the image!');
 	      }
 	  });
+
+  });
+
+  // Listen for get requestion
+  socket.on('get sketch', function(id) {
+  	socket.emit('sketch url','https://s3.amazonaws.com/project2storyboard/' + id);
   });
 
 }

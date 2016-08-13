@@ -95,7 +95,7 @@ var __slice = Array.prototype.slice;
       // Save dataURL
       var dataURL = this.el.toDataURL(mime);
       // Send dataURL through socket
-      return socket.emit('my sketch', dataURL);
+      return socket.emit('send sketch', dataURL, 'test2');
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
@@ -218,6 +218,9 @@ var __slice = Array.prototype.slice;
 // Socket io
 var socket = io.connect();
 
-//socket.on('sketch', function () {
-//  socket.emit('my sketch', { sketch: 'base64' });
-//});
+// Send get request for sketch
+socket.emit('get sketch', 'test');
+// Show data received
+socket.on('sketch url', function (data) {
+  console.log(data)
+});
