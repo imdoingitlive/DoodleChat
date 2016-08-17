@@ -10,5 +10,5 @@ module.exports = function(sequelize, DataTypes) {
             }
         }
     });
-    return Story;
+    return StoryPart;
 };
