@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
     }, {
         classMethods: {
             associate: function(models) {
-                User.hasOne(models.Session)
+                User.belongsToMany(models.Storyboard)
             }
         }
     });

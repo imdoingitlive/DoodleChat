@@ -6,9 +6,9 @@ module.exports = function(sequelize, DataTypes) {
     }, {
         classMethods: {
             associate: function(models) {
-                StoryPart.hasOne(models.Story)
+                StoryPart.belongsTo(models.Story)
             }
         }
     });
-    return Story;
+    return StoryPart;
 };

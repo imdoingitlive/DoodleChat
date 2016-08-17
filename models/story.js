@@ -6,7 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     }, {
         classMethods: {
             associate: function(models) {
-                Story.hasMany(models.StoryPart)
+                Story.hasMany(models.StoryPart {as: parts});
             }
         }
     });
