@@ -10,6 +10,7 @@ var methodOverride = require('method-override');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+global.db = require('./models');
 
 // Serve static content for the app from the "public" directory in the application directory.
 app.use(express.static(process.cwd() + '/public'));
@@ -35,5 +36,15 @@ io.on('connection', socketio.connection);
 
 // Port
 var PORT = process.env.PORT || 3000;
-server.listen(PORT);
-console.log('Listening on port: ' + PORT);
+
+// sync with sequelize and start listening
+db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0')
+.then(function() {
+    return db.sequelize.sync({
+        force: true
+    })
+}).then(function() {
+    app.listen(PORT, function() {
+        console.log("Server running on port %s", PORT);
+    });
+});
