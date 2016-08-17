@@ -2,12 +2,13 @@
 var LocalStrategy = require('passport-local').Strategy;
 
 // Load up the user model
-var mysql = require('mysql');
+//var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
-var dbconfig = require('./database');
-var connection = mysql.createConnection(dbconfig.connection);
+var models  = require('../models');
+// var dbconfig = require('./database');
+// var connection = mysql.createConnection(dbconfig.connection);
 
-connection.query('USE ' + dbconfig.database);
+// connection.query('USE ' + dbconfig.database);
 // expose this function to our app using module.exports
 module.exports = function(passport) {
 
@@ -24,8 +25,15 @@ module.exports = function(passport) {
 
   // used to deserialize the user
   passport.deserializeUser(function(id, done) {
-    connection.query("SELECT * FROM users WHERE id = ? ", [id], function(err, rows) {
-      done(err, rows[0]);
+    // connection.query("SELECT * FROM users WHERE id = ? ", [id], function(err, rows) {
+    //   done(err, rows[0]);
+    // });
+    models.User.findOne({
+      where: {id: id}
+    }).success(function(user){
+      done(null, user);
+    }).error(function(err){
+      done(err, null);
     });
   });
 
@@ -46,27 +54,43 @@ module.exports = function(passport) {
       function(req, username, password, done) {
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        connection.query("SELECT * FROM users WHERE username = ?", [username], function(err, rows) {
-          if (err)
-            return done(err);
-          if (rows.length) {
+        // connection.query("SELECT * FROM users WHERE username = ?", [username], function(err, rows) {
+        //   if (err)
+        //     return done(err);
+        //   if (rows.length) {
+        //     return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+        //   } else {
+        //     // if there is no user with that username
+        //     // create the user
+        //     var newUserMysql = {
+        //       username: username,
+        //       password: bcrypt.hashSync(password, null, null) // use the generateHash function in our user model
+        //     };
+
+        //     var insertQuery = "INSERT INTO users ( username, password ) values (?,?)";
+
+        //     connection.query(insertQuery, [newUserMysql.username, newUserMysql.password], function(err, rows) {
+        //       newUserMysql.id = rows.insertId;
+
+        //       return done(null, newUserMysql);
+        //     });
+        //   }
+        // });
+
+        models.User.findOne({
+          where: {username: username}
+        }).then(function(user){
+          // If username already found in database
+          if (user !== null) {
             return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
-          } else {
-            // if there is no user with that username
-            // create the user
-            var newUserMysql = {
-              username: username,
-              password: bcrypt.hashSync(password, null, null) // use the generateHash function in our user model
-            };
-
-            var insertQuery = "INSERT INTO users ( username, password ) values (?,?)";
-
-            connection.query(insertQuery, [newUserMysql.username, newUserMysql.password], function(err, rows) {
-              newUserMysql.id = rows.insertId;
-
-              return done(null, newUserMysql);
-            });
           }
+          // Create if not
+          models.User.create({
+            username: username,
+            password: bcrypt.hashSync(password, null, null) // use the generateHash function in our user model
+          })
+        }).error(function(err){
+          done(err);
         });
       })
   );
