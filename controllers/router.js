@@ -28,7 +28,7 @@ router.get('/login', function(req, res) {
 
 // process the login form
 router.post('/login', passport.authenticate('local-login', {
-		successRedirect: '/profile', // redirect to the secure profile section
+		successRedirect: '/sketch', // redirect to the secure sketch section
 		failureRedirect: '/login', // redirect back to the signup page if there is an error
 		failureFlash: true // allow flash messages
 	}),
@@ -56,18 +56,18 @@ router.get('/signup', function(req, res) {
 
 // process the signup form
 router.post('/signup', passport.authenticate('local-signup', {
-	successRedirect: '/profile', // redirect to the secure profile section
+	successRedirect: '/sketch', // redirect to the secure sketch section
 	failureRedirect: '/signup', // redirect back to the signup page if there is an error
 	failureFlash: true // allow flash messages
 }));
 
 // =====================================
-// PROFILE SECTION =========================
+// SKETCH SECTION =========================
 // =====================================
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
-router.get('/profile', isLoggedIn, function(req, res) {
-	res.render('profile', {
+router.get('/sketch', isLoggedIn, function(req, res) {
+	res.render('sketch', {
 		user: req.user // get the user out of session and pass to template
 	});
 });
@@ -78,10 +78,6 @@ router.get('/profile', isLoggedIn, function(req, res) {
 router.get('/logout', function(req, res) {
 	req.logout();
 	res.redirect('/');
-});
-
-router.get('/sketch', function(req, res) {
-	res.sendFile(path.resolve('public/assets/sketch.html'));
 });
 
 // Route middleware to make sure

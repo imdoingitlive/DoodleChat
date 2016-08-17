@@ -1,3 +1,9 @@
+#logout {
+  position: absolute;
+  left: 50px;
+  bottom: 50px;
+}
+
 #wrapper {
 	position: relative;
 }
