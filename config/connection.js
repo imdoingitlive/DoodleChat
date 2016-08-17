@@ -6,7 +6,7 @@ var source = {
 		port: 3306,
 		host: 'localhost',
 		user: 'root',
-		password: '',
+		password: 't3st3r',
 		database: 'my_schema'
 	},
 	jawsDB: {

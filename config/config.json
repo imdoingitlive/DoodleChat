@@ -2,7 +2,7 @@
   "development": {
     "host": "localhost",
     "username": "root",
-    "password": "",
+    "password": "t3st3r",
     "database": "my_schema",
     "dialect": "mysql"
 
