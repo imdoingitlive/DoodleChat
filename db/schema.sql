@@ -1,3 +1,4 @@
+/*
 CREATE TABLE `Users` (
   `UserID` INTEGER AUTO_INCREMENT NOT NULL,
   `FirstName` VARCHAR(30),
@@ -33,4 +34,7 @@ CREATE TABLE `User-Images` (
   `ImageLink` VARCHAR(255),
   KEY `Key` (`SessionID`, `UserID`, `StoryID`)
 );
+*/
+CREATE DATABASE storyboard_db;
 
+USE storyboard_db;
