@@ -1,6 +1,6 @@
 module.exports = function(sequelize, DataTypes) {
-    var UserImage = sequelize.define('UserImage', {
-        imageLink: {
+    var UserSketch = sequelize.define('UserSketch', {
+        sketchUrl: {
             type: DataTypes.STRING 
         }
     }, {
@@ -8,11 +8,11 @@ module.exports = function(sequelize, DataTypes) {
             associate: function(models) {
                 // One Image is created by One User 
                 // during One Session for One Part of the Story
-                UserImage.belongsTo(models.Storyboard);
-                UserImage.hasOne(models.StoryPart);
-                UserImage.hasOne(models.User);
+                UserSketch.belongsTo(models.Storyboard);
+                UserSketch.hasOne(models.StoryPart);
+                UserSketch.hasOne(models.User);
             }
         }
     });
-    return UserImage;
+    return UserSketch;
 };

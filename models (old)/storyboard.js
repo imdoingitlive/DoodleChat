@@ -11,7 +11,10 @@ module.exports = function(sequelize, DataTypes) {
                 // One Story is used for the Storyboard
                 Storyboard.hasOne(models.Story);
                 // A Storyboard has one Image per User
-                Storyboard.hasOne(models.UserImage);
+                // Since there are many users collaborators
+                // i.e. users, there will be many User/Images
+                // for one Storyboard
+                Storyboard.hasMany(models.UserSketch);
             }
         }
     });
