@@ -5,11 +5,7 @@ var LocalStrategy = require('passport-local').Strategy;
 //var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
 var models  = require('../models');
-// var dbconfig = require('./database');
-// var connection = mysql.createConnection(dbconfig.connection);
 
-// connection.query('USE ' + dbconfig.database);
-// expose this function to our app using module.exports
 module.exports = function(passport) {
 
   // =========================================================================
@@ -25,9 +21,6 @@ module.exports = function(passport) {
 
   // used to deserialize the user
   passport.deserializeUser(function(id, done) {
-    // connection.query("SELECT * FROM users WHERE id = ? ", [id], function(err, rows) {
-    //   done(err, rows[0]);
-    // });
     models.User.findOne({
       where: {id: id}
     }).then(function(user){
