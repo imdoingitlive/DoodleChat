@@ -1,32 +1,4 @@
 module.exports = function(sequelize, DataTypes) {
-<<<<<<< HEAD
-    var User = sequelize.define('User', {
-        firstName: {
-            type: DataTypes.STRING
-        },
-        lastName: {
-            type: DataTypes.STRING 
-        }
-        email: {
-            type: DataTypes.STRING
-        }
-        userName: {
-            notNull: true;
-            type: DataTypes.STRING
-        }
-        password: {
-            notNull: true;
-            type: DataTypes.STRING
-        }
-    }, {
-        classMethods: {
-            associate: function(models) {
-                User.belongsToMany(models.Storyboard)
-            }
-        }
-    });
-    return User;
-=======
   var User = sequelize.define('User', {
     // firstName: {
     //     type: DataTypes.STRING
@@ -58,5 +30,4 @@ module.exports = function(sequelize, DataTypes) {
     }
   });
   return User;
->>>>>>> d14ac130f0b9a5065f7a3c7d3441d6de6815082a
 };
