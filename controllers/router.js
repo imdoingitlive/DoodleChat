@@ -7,6 +7,7 @@ var path = require('path');
 var passport = require('passport');
 var flash = require('connect-flash');
 var isLoggedIn = require('./authentication');
+var models  = require('../models');
 //var burger = require('../models/burger.js');
 
 // =====================================
@@ -29,13 +30,11 @@ router.get('/login', function(req, res) {
 
 // process the login form
 router.post('/login', passport.authenticate('local-login', {
-		successRedirect: '/sketch', // redirect to the secure sketch section
+		successRedirect: '/group', // redirect to the secure sketch section
 		failureRedirect: '/login', // redirect back to the signup page if there is an error
 		failureFlash: true // allow flash messages
 	}),
 	function(req, res) {
-		console.log("hello");
-
 		if (req.body.remember) {
 			req.session.cookie.maxAge = 1000 * 60 * 3;
 		} else {
@@ -57,10 +56,70 @@ router.get('/signup', function(req, res) {
 
 // process the signup form
 router.post('/signup', passport.authenticate('local-signup', {
-	successRedirect: '/sketch', // redirect to the secure sketch section
+	successRedirect: '/group', // redirect to the secure sketch section
 	failureRedirect: '/signup', // redirect back to the signup page if there is an error
 	failureFlash: true // allow flash messages
 }));
+
+// =====================================
+// GROUP SECTION =========================
+// =====================================
+// we will want this protected so you have to be logged in to visit
+// we will use route middleware to verify this (the isLoggedIn function)
+router.get('/group', isLoggedIn, function(req, res) {
+	// Get all groups that the user is in
+	// models.Group.findAll({
+ //    include: [ models.User ]
+ //  }).then(function(groups) {
+ //  	// Render all the groups
+	//   res.render('group', {
+	// 		group: groups // get the user out of session and pass to template
+	// 	});
+ //  }).error(function(err) {
+ //    console.log(err);
+ //  })
+ res.render('group');
+	
+});
+
+router.post('/group', isLoggedIn, function(req, res) {
+	// Check if groupname exists
+	models.Group.findOne({
+    where: {groupname: req.body.groupname}
+  }).then(function(group){
+
+    // If groupname already found in database
+    if (group !== null) {
+    	res.render('group', {
+    		message: 'That group is already taken.'
+    	});
+    }
+    // Create if not
+		models.Group.create({
+	    groupname: req.body.groupname
+	  }).then(function(group) {
+	  	// Get sequelize user object
+	  	// var userID = req.user.id;
+	  	var sequelizeUser = models.User.findOne({
+	  		where: {username: req.user.username}
+	  	});
+	  	console.log(sequelizeUser)
+	  	// Then add user to group
+	   //  group.addUser(sequelizeUser).then(function(user) {
+		  //   console.log(user)
+		  // }).error(function(err) {
+		  //   console.log(err);
+		  // })
+	  }).error(function(err) {
+	    done(err);
+	  })
+
+  }).error(function(err){
+    done(err);
+  });
+	
+	
+});
 
 // =====================================
 // SKETCH SECTION =========================
