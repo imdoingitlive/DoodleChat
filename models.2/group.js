@@ -1,20 +1,6 @@
 module.exports = function(sequelize, DataTypes) {
-
-  var User = sequelize.define('User', {
-    // firstName: {
-    //     type: DataTypes.STRING
-    // },
-    // lastName: {
-    //     type: DataTypes.STRING 
-    // },
-    // email: {
-    //     type: DataTypes.STRING
-    // },
-    username: {
-      notNull: true,
-      type: DataTypes.STRING
-    },
-    password: {
+  var Group = sequelize.define('Group', {
+    name: {
       notNull: true,
       type: DataTypes.STRING
     }
@@ -24,11 +10,11 @@ module.exports = function(sequelize, DataTypes) {
     underscored: true,
     classMethods: {
       associate: function(models) {
-        User.belongsToMany(models.Group, {
+        Group.belongsToMany(models.User, {
           through: models.UserGroup
         })
       }
     }
   });
-  return User;
+  return Group;
 };
