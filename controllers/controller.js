@@ -15,7 +15,7 @@ module.exports = {
       {text: "in the city"}, 
       {text: "with a dog"}, 
       {text: "in the rain."}
-    ]
+    ];
 
     var pages = [];
 
@@ -23,28 +23,47 @@ module.exports = {
     // Once we are done creating all the pages,
     // Create the Story and add the Pages to the Story
 
-    for (var i=0; i<captions.length; i++) {
-      models.Caption.create({
-          text: captions[i].text
-      }).then(function(caption) {
-        models.Page.create({
-          // Only has imageUrl as an attribute
-          // We don't have an image yet so nothing to do here
-        }).then(function(page) {
-          page.setCaption(caption);
-          pages.push(page);
-        });          
-      });
-    }
-
-    // We now have an array of pages that can be
-    // can be added to the story.  Create the Story
-    // and add the pages.
     return models.Story.create({
-      name: 'Test Story 01'   
-    }).then(function(story){
-         return story.addPages(pages);  
-    });
-  }
 
+      name: 'Test Story 01'
+
+    }).then(function(story){
+
+      for (var i=0; i<captions.length; i++) {
+
+        models.Caption.create({
+
+            text: captions[i].text
+
+        }).then(function(caption) {
+
+          models.Page.create({
+
+            caption: caption
+
+          }).then(function(page) {
+
+            console.log("page.setCaption and pages.push")
+            console.log("page: " + page.id);
+
+            page.setCaption(caption);
+            page.setStory(story);
+            
+            pages.push(page);
+
+//            console.log(page);
+          });
+
+        });
+
+      } // End of For Loop
+
+
+      return story.addPages(pages);
+
+    }).error(function(error){
+      done(error);
+    }); // End of Story :)
+
+  }
 }

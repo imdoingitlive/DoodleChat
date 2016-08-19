@@ -13,6 +13,7 @@ module.exports = function(sequelize, DataTypes) {
             associate: function(models) {
                 Page.hasOne(models.User, {as: 'author'});
                 Page.hasOne(models.Caption, {as: 'caption'});
+                Page.belongsTo(models.Story, {as: 'story'});
             }
         }
     });

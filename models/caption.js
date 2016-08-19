@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
         tableName: 'Captions',
         classMethods: {
             associate: function(models) {
-                Caption.belongsTo(models.Story, {as: 'story'});
+                Caption.belongsTo(models.Page, {as: 'page'});
             }
         }
     });
