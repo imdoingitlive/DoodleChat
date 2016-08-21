@@ -34,6 +34,6 @@ models.sequelize.sync({force: true}).then(function () {
 
   // Controller object to set up the database on the server.
   // For now, just create a story and it's pages
-  var controller = require('../controllers/controller');
-  controller.createStories();
+  // var controller = require('../controllers/controller');
+  // controller.createStories();
 });

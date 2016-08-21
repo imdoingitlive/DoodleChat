@@ -30,7 +30,7 @@ router.get('/login', function(req, res) {
 
 // process the login form
 router.post('/login', passport.authenticate('local-login', {
-		successRedirect: '/group', // redirect to the secure sketch section
+		successRedirect: '/groups', // redirect to the secure sketch section
 		failureRedirect: '/login', // redirect back to the signup page if there is an error
 		failureFlash: true // allow flash messages
 	}),
@@ -56,7 +56,7 @@ router.get('/signup', function(req, res) {
 
 // process the signup form
 router.post('/signup', passport.authenticate('local-signup', {
-	successRedirect: '/group', // redirect to the secure sketch section
+	successRedirect: '/groups', // redirect to the secure sketch section
 	failureRedirect: '/signup', // redirect back to the signup page if there is an error
 	failureFlash: true // allow flash messages
 }));
@@ -66,23 +66,73 @@ router.post('/signup', passport.authenticate('local-signup', {
 // =====================================
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
-router.get('/group', isLoggedIn, function(req, res) {
-	// Get all groups that the user is in
-	// models.Group.findAll({
- //    include: [ models.User ]
- //  }).then(function(groups) {
- //  	// Render all the groups
-	//   res.render('group', {
-	// 		group: groups // get the user out of session and pass to template
-	// 	});
- //  }).error(function(err) {
- //    console.log(err);
- //  })
- res.render('group');
+router.get('/groups', isLoggedIn, function(req, res) {
+
+	// Get sequelize user object
+	models.User.findOne({
+		where: {username: req.user.username}
+	}).then(function(user) {
+
+		// Retrieve all groups from user
+		user.getGroups().then(function(groups) {
+			// Create handlbears object for group
+			var hbsObject = {
+				username: req.user.username,
+				groupids: [],
+				groupnames: []
+			};
+			for (var i in groups) {
+				hbsObject.groupids.push(groups[i].dataValues.id);
+				hbsObject.groupnames.push(groups[i].dataValues.groupname);
+			}
+			console.log(hbsObject)
+			// Render group page with groups
+  		res.render('groups', hbsObject);
+		})
+
+	}).error(function(err) {
+    console.log(err);
+  })
 	
 });
 
-router.post('/group', isLoggedIn, function(req, res) {
+// When hitting find group button
+router.post('/findgroup', isLoggedIn, function(req, res) {
+
+	// If groupname is empty in database
+  if (req.body.groupname === '') {
+  	res.json({message: 'Please enter a non empty group name.'});
+  	return
+  }
+
+	// Check if groupname exists
+	models.Group.findOne({
+    where: {groupname: req.body.groupname}
+  }).then(function(group){
+
+    // If groupname already found in database
+    if (group === null) {
+    	res.json({message: 'That group does not exist.'});
+    	return
+    }
+    // Else send groupname
+  	res.json({group: group.dataValues.groupname});
+
+  }).error(function(err){
+    console.log(err);
+  });
+	
+});
+
+// When hitting create group button
+router.post('/creategroup', isLoggedIn, function(req, res) {
+
+	// If groupname is empty in database
+  if (req.body.groupname === '') {
+  	res.json({message: 'Please enter a non empty group name.'});
+  	return
+  }
+
 	// Check if groupname exists
 	models.Group.findOne({
     where: {groupname: req.body.groupname}
@@ -90,34 +140,41 @@ router.post('/group', isLoggedIn, function(req, res) {
 
     // If groupname already found in database
     if (group !== null) {
-    	res.render('group', {
-    		message: 'That group is already taken.'
-    	});
+    	res.json({message: 'That group is already taken.'});
+    	return
     }
-    // Create if not
+    // Create if not and add user
 		models.Group.create({
 	    groupname: req.body.groupname
-	  }).then(function(group) {
+	  }).then(function(newGroup) {
+
 	  	// Get sequelize user object
-	  	// var userID = req.user.id;
-	  	var sequelizeUser = models.User.findOne({
+	  	models.User.findOne({
 	  		where: {username: req.user.username}
-	  	});
-	  	console.log(sequelizeUser)
-	  	// Then add user to group
-	   //  group.addUser(sequelizeUser).then(function(user) {
-		  //   console.log(user)
-		  // }).error(function(err) {
-		  //   console.log(err);
-		  // })
+	  	}).then(function(user) {
+
+	  		// Associate user with group
+	  		user.addGroup(newGroup).then(function() {
+
+	  			// Send group name
+	  			res.json({group: newGroup.dataValues.groupname});
+
+	  		}).error(function(err) {
+			    console.log(err);
+			  })
+	  		
+
+	  	}).error(function(err) {
+		    console.log(err);
+		  })
+
 	  }).error(function(err) {
-	    done(err);
+	    console.log(err);
 	  })
 
   }).error(function(err){
-    done(err);
+    console.log(err);
   });
-	
 	
 });
 

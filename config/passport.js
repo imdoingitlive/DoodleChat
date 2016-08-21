@@ -21,6 +21,7 @@ module.exports = function(passport) {
 
   // used to deserialize the user
   passport.deserializeUser(function(id, done) {
+    // Find username
     models.User.findOne({
       where: {id: id}
     }).then(function(user){
@@ -45,6 +46,7 @@ module.exports = function(passport) {
         passReqToCallback: true // allows us to pass back the entire request to the callback
       },
       function(req, username, password, done) {
+        // Find username
         models.User.findOne({
           where: {username: username}
         }).then(function(user){
