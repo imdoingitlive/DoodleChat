@@ -85,7 +85,6 @@ router.get('/groups', isLoggedIn, function(req, res) {
 				hbsObject.groupids.push(groups[i].dataValues.id);
 				hbsObject.groupnames.push(groups[i].dataValues.groupname);
 			}
-			console.log(hbsObject)
 			// Render group page with groups
   		res.render('groups', hbsObject);
 		})
@@ -115,12 +114,63 @@ router.post('/findgroup', isLoggedIn, function(req, res) {
     	res.json({message: 'That group does not exist.'});
     	return
     }
-    // Else send groupname
-  	res.json({group: group.dataValues.groupname});
+
+    // Check if user is in group
+    group.getUsers().then(function(results) {
+    	console.log(results)
+    	var obj = {
+    		group: group.dataValues.groupname
+    	};
+    	// Go through all the users to see if user is in group
+    	for (var i in results) {
+    		if (results[i].dataValues.username === req.user.username) {
+    			obj.joined = true;
+    		}
+    	}
+    	// If user is not in group add false object
+    	if (!obj.joined) {
+    		obj.joined = false;
+    	}
+    	// Send groupname
+  		res.json(obj);
+    })
 
   }).error(function(err){
     console.log(err);
   });
+	
+});
+
+// When hitting join group button
+router.post('/joingroup', isLoggedIn, function(req, res) {
+
+	// Get sequelize user object
+	models.User.findOne({
+		where: {username: req.user.username}
+	}).then(function(user) {
+
+		// Get sequelize group object
+		models.Group.findOne({
+	    where: {groupname: req.body.groupname}
+	  }).then(function(group) {
+
+			// Associate user with group
+			group.addUser(user).then(function() {
+
+				// Send group name
+				res.json({group: group.dataValues.groupname});
+
+			}).error(function(err) {
+		    console.log(err);
+		  })
+
+		}).error(function(err) {
+	    console.log(err);
+	  })
+
+	}).error(function(err) {
+    console.log(err);
+  })
 	
 });
 
