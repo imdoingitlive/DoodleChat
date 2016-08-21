@@ -233,10 +233,40 @@ router.post('/creategroup', isLoggedIn, function(req, res) {
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/sketch/:groupname', isLoggedIn, function(req, res) {
-	res.render('sketch', {
-		username: req.user.username,
-		groupname: req.params.groupname
-	});
+
+	var groupname = req.params.groupname;
+
+	// Get sequelize group object
+		models.Group.findOne({
+	    where: {groupname: groupname}
+	  }).then(function(group) {
+
+			// Associate user with group
+			group.getUsers().then(function(results) {
+
+				var obj = {
+					username: req.user.username,
+					groupname: groupname,
+					groupmembers: []
+				}
+
+				// Go through all the users and add usernames
+	    	for (var i in results) {
+	    		// Add all usernames to group
+	    		obj.groupmembers.push(results[i].dataValues.username)
+	    	}
+
+				// Send group name
+				res.render('sketch', obj);
+
+			}).error(function(err) {
+		    console.log(err);
+		  })
+
+		}).error(function(err) {
+	    console.log(err);
+	  })
+	
 });
 
 // =====================================

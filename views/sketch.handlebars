@@ -3,6 +3,12 @@
 	<div class="page-header text-center">
     <h1>Sketch Group: {{this.groupname}}</h1>
     <h2>Logged in as: {{this.username}}</h2>
+    <div class="well">
+      <h3>Group members</h3>
+      {{#each this.groupmembers}}
+        <p>{{this}}</p>	
+      {{/each}}
+    </div>
     <a href="/logout" class="btn btn-default btn-sm">Logout</a>
   </div>
 
