@@ -5,9 +5,11 @@
     <h2>Logged in as: {{this.username}}</h2>
     <div class="well">
       <h3>Group members</h3>
-      {{#each this.groupmembers}}
-        <p>{{this}}</p>	
-      {{/each}}
+      <div id="group-members">
+	      {{#each this.groupmembers}}
+	        <p>{{this}}</p>	
+	      {{/each}}
+	    </div>
     </div>
     <a href="/logout" class="btn btn-default btn-sm">Logout</a>
   </div>

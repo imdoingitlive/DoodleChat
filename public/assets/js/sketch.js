@@ -218,6 +218,19 @@ var __slice = Array.prototype.slice;
 // Socket io
 var socket = io.connect();
 
+// Send username
+socket.on('new user', function(newUser) {
+  var alreadyAdded = false;
+  $('#group-members>p').each(function() {
+    var username = $(this).text();
+    if (newUser === username) {
+      alreadyAdded = true;
+    }
+  });
+  if (!alreadyAdded)
+    $('#group-members').append('<p>' + newUser + '</p>');
+});
+
 // Send get request for sketch
 socket.emit('get sketch', 'test');
 // Show data received

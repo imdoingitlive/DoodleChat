@@ -7,17 +7,13 @@
 // rather than having them take up space in server.js.
 var debug = require('debug')('server');
 
-// we bring in the app we exported from server.js
-var app = require('../server');
+// we bring in the app and server we exported from server.js
+var serverJS = require('../server');
+var app = serverJS.app;
+var server = serverJS.server;
 
 // we bring in the models we exported with index.js
 var models = require('../models');
-
-// socket io
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var socketio = require('../controllers/socketio');
-io.on('connection', socketio.connection);
 
 // we set the port of the app
 app.set('port', process.env.PORT || 3000);

@@ -65,10 +65,11 @@ $(document).on("click", "#join-submit", function() {
 
 		// Append group
 		if (res.group) {
-			var $p = $("<p>").text(res.group);
-			var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
-			var $div = $("<div>").append($p).append($but)
-			$('#your-groups').append($div);
+			// var $p = $("<p>").text(res.group);
+			// var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
+			// var $div = $("<div>").append($p).append($but)
+			// $('#your-groups').append($div);
+			window.location = currentURL + "/groups";
 		}
 		
 	});
@@ -102,10 +103,11 @@ $(document).on("click", "#create-submit", function() {
 
 		// Append group
 		if (res.group) {
-			var $p = $("<p>").text(res.group);
-			var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
-			var $div = $("<div>").append($p).append($but)
-			$('#your-groups').append($div);
+			// var $p = $("<p>").text(res.group);
+			// var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
+			// var $div = $("<div>").append($p).append($but)
+			// $('#your-groups').append($div);
+			window.location = currentURL + "/groups";
 		}
 		
 	});
@@ -117,7 +119,7 @@ $(document).on("click", "#create-submit", function() {
 $(document).on("click", ".sketch", function() {
 
 	// Get user input groupname
-	var groupname = encodeURI($(".sketch").attr("data-group"));
+	var groupname = encodeURI($(this).attr("data-group"));
 
 	// Empty input
 	$("#create-input").val('');
