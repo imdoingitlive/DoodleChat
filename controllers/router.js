@@ -14,7 +14,7 @@ var models  = require('../models');
 // HOME PAGE (with login links) ========
 // =====================================
 router.get('/', function(req, res) {
-	res.render('index'); // load the index.ejs file
+	res.render('index');
 });
 
 // =====================================
@@ -117,7 +117,6 @@ router.post('/findgroup', isLoggedIn, function(req, res) {
 
     // Check if user is in group
     group.getUsers().then(function(results) {
-    	console.log(results)
     	var obj = {
     		group: group.dataValues.groupname
     	};
@@ -233,9 +232,10 @@ router.post('/creategroup', isLoggedIn, function(req, res) {
 // =====================================
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
-router.get('/sketch', isLoggedIn, function(req, res) {
+router.get('/sketch/:groupname', isLoggedIn, function(req, res) {
 	res.render('sketch', {
-		user: req.user // get the user out of session and pass to template
+		username: req.user.username,
+		groupname: req.params.groupname
 	});
 });
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-
 // Express can launch a www executable to handle certain tasks.
 // www goes in bin (sometimes .bin to keep it hidden)
 
@@ -14,7 +13,7 @@ var app = require('../server');
 // we bring in the models we exported with index.js
 var models = require('../models');
 
-// Socket io
+// socket io
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var socketio = require('../controllers/socketio');
@@ -25,9 +24,9 @@ app.set('port', process.env.PORT || 3000);
 
 // we sync the models with our db 
 // (thus creating the apropos tables)
-models.sequelize.sync({force: true}).then(function () {
+models.sequelize.sync({force: true}).then(function() {
 	// set our app to listen to the port we set above
-  var server = app.listen(app.get('port'), function() {
+  server.listen(app.get('port'), function() {
   	// then save a log of the listening to our debugger.
     debug('Express server listening on port ' + server.address().port);
   });

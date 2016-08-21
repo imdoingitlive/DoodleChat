@@ -16,8 +16,6 @@ $(document).on("click", "#find-submit", function() {
 	// AJAX post the group name 
 	$.post(currentURL + "/findgroup", obj, function(res) {
 
-		console.log(res)
-
 		// Remove previous messages and serach groups
 		$('.message').remove();
 		$('#search-group').remove();
@@ -56,8 +54,6 @@ $(document).on("click", "#join-submit", function() {
 	// AJAX post the group name 
 	$.post(currentURL + "/joingroup", obj, function(res) {
 
-		console.log(res)
-
 		// Remove previous messages and serach groups
 		$('.message').remove();
 		$('#search-group').remove();
@@ -69,7 +65,10 @@ $(document).on("click", "#join-submit", function() {
 
 		// Append group
 		if (res.group) {
-			$('#your-groups').append('<p>' + res.group + '</p>');
+			var $p = $("<p>").text(res.group);
+			var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
+			var $div = $("<div>").append($p).append($but)
+			$('#your-groups').append($div);
 		}
 		
 	});
@@ -92,8 +91,9 @@ $(document).on("click", "#create-submit", function() {
 	// AJAX post the group name 
 	$.post(currentURL + "/creategroup", obj, function(res) {
 
-		// Remove previous messages
+		// Remove previous messages and serach groups
 		$('.message').remove();
+		$('#search-group').remove();
 
 		// Append message
 		if (res.message) {
@@ -102,10 +102,28 @@ $(document).on("click", "#create-submit", function() {
 
 		// Append group
 		if (res.group) {
-			$('#your-groups').append('<p>' + res.group + '</p>');
+			var $p = $("<p>").text(res.group);
+			var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
+			var $div = $("<div>").append($p).append($but)
+			$('#your-groups').append($div);
 		}
 		
 	});
+
+	return false;
+});
+
+// Capture go submit
+$(document).on("click", ".sketch", function() {
+
+	// Get user input groupname
+	var groupname = encodeURI($(".sketch").attr("data-group"));
+
+	// Empty input
+	$("#create-input").val('');
+
+	// Go to group sketch
+	window.location = currentURL + "/sketch/" + groupname;
 
 	return false;
 });

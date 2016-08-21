@@ -1,17 +1,25 @@
-<div class="demo" id="colors_demo">
-  <div class="tools">
-    <a href="#colors_sketch" data-send="png" style="float: right; width: 100px;">Send</a>
+<div class="container">
+
+	<div class="page-header text-center">
+    <h1>Sketch Group: {{this.groupname}}</h1>
+    <h2>Logged in as: {{this.username}}</h2>
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
   </div>
-</div>
 
-<div id="wrapper">
-  <img crossOrigin="annoymous" id="bk" src="https://s3.amazonaws.com/project2storyboard/test">
-  <canvas id="colors_sketch" width="800" height="300"></canvas>
-</div>
+	<div class="demo" id="colors_demo">
+	  <div class="tools">
+	    <a href="#colors_sketch" data-send="png" style="float: right; width: 100px;">Send</a>
+	  </div>
+	</div>
 
-<a href="/logout" id="logout" class="btn btn-default btn-sm">Logout</a>
+	<div id="wrapper">
+	  <img crossOrigin="annoymous" id="bk" src="https://s3.amazonaws.com/project2storyboard/test">
+	  <canvas id="colors_sketch" width="800" height="300"></canvas>
+	</div>
+
+</div>
 
 <!-- Socket IO -->
 <script src="/socket.io/socket.io.js"></script>
 <!-- Sketch JS -->
-<script src="./assets/js/sketch.js"></script>
+<script src="../assets/js/sketch.js"></script>

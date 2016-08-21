@@ -12,7 +12,10 @@
       <div class="well" id="your-groups">
         <h3>Your Groups</h3>
         {{#each this.groupnames}}
-          <p>{{this}}</p>
+          <div>
+            <p>{{this}}</p>
+            <button class="btn btn-info sketch" data-group="{{this}}" type="button">Go</button>
+          </div>
         {{/each}}
       </div>
     </div>
