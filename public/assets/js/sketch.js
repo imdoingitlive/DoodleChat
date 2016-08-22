@@ -64,7 +64,13 @@ var Sketch;
           }
           // Custom listener for sending
           if ($(this).attr('data-send')) {
-            sketch.send($(this).attr('data-send'));
+            // Save gropuname, storyID, and part for img URL
+            var obj = {
+              groupname: $('#group-name').attr('data-groupname'),
+              storyID: String(Number($('#completed').attr('data-completed'))+1),
+              part: $('#part').attr('data-part'),
+            }
+            sketch.send($(this).attr('data-send'),obj);
           }
           return false;
         });
@@ -78,6 +84,28 @@ var Sketch;
       }
       mime = "image/" + format;
       return window.open(this.el.toDataURL(mime));
+    };
+    // Add custom prototype for sending
+    Sketch.prototype.send = function(format, obj) {
+      // Save background if part is not 1
+      console.log(obj)
+      if (obj.part !== '1') {
+        this.context.globalCompositeOperation = 'destination-over';
+        this.context.drawImage(bk, 0, 0);
+        this.context.globalCompositeOperation = 'source-over';
+      }
+      // Get MIME type
+      var mime;
+      format || (format = "png");
+      if (format === "jpg") {
+        format = "jpeg";
+      }
+      mime = "image/" + format;
+      // Save dataURL
+      var dataURL = this.el.toDataURL(mime);
+      // Send dataURL through socket
+      // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
+      return socket.emit('send sketch', dataURL, obj);
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
@@ -184,7 +212,7 @@ var Sketch;
 })(jQuery);
 
 // Start of Custom scripting
-function addCanvas(caption) {
+function addCanvas(part,caption,groupnameEncoded,storyID) {
   // Add tools
   var $done = $('<a>').attr('href','#colors_sketch').attr('data-send','png').css('width','100px').text('Done');
   var $tools = $('<div>').attr('id','tools').append($done);
@@ -201,9 +229,15 @@ function addCanvas(caption) {
   }// Add caption
   var $caption = $('<h1>').attr('id','caption').text(caption);
   // Add canvas
-  var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/test');
   var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
-  var $canvasHolder = $('<div>').attr('id','canvas').append($img).append($canvas).append($caption);
+  var $canvasHolder = $('<div>').attr('id','canvas').append($canvas).append($caption);
+  // Only add image back if the part is not first
+  if (part !== '1') {
+    // Add img
+    var previousPart = String(Number(part)-1);
+    var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/' + groupnameEncoded  + '/' + storyID + '/' + previousPart);
+    $canvasHolder.append($img)
+  }
   // Add tools and canvas to wrapper
   var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($tools).append($canvasHolder);
   $('.container').append($canvasWrapper);
@@ -250,29 +284,9 @@ $.post(currentURL + "/story", completed, function(res) {
   localStorage.setItem("caption3",res.caption3);
   localStorage.setItem("caption4",res.caption4);
 
-  // Add custom prototype for sending
-  Sketch.prototype.send = function(format) {
-    // Save background
-    this.context.globalCompositeOperation = 'destination-over';
-    this.context.drawImage(bk, 0, 0);
-    this.context.globalCompositeOperation = 'source-over';
-    // Get MIME type
-    var mime;
-    format || (format = "png");
-    if (format === "jpg") {
-      format = "jpeg";
-    }
-    mime = "image/" + format;
-    // Save dataURL
-    var dataURL = this.el.toDataURL(mime);
-    // Send dataURL through socket
-    // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
-    return socket.emit('send sketch', dataURL, groupnameEncoded + '/' + storyID + '/' + part);
-  };
-
   // Check if canvas should be shown
   if (part === '1')
-    addCanvas(caption);
+    addCanvas(part,caption,groupnameEncoded,storyID);
   else
     addWaiting(part);
   
@@ -293,4 +307,9 @@ socket.on(groupname + 'new user', function(newUser) {
   // If if not already added
   if (!alreadyAdded)
     $('#group-members').append('<p>' + newUser + '</p>');
+});
+
+// Listen for reload
+socket.on(groupname + 'reload', function() {
+  location.reload()
 });
