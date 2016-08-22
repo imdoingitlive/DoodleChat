@@ -1,8 +1,10 @@
 <div class="container">
 
 	<div class="page-header text-center">
-    <h1>Sketch Group: {{this.groupname}}</h1>
-    <h2>Logged in as: {{this.username}}</h2>
+    <h1 id="group-name" data-groupname="{{this.groupname}}">Sketch Group: {{this.groupname}}</h1>
+    <h2 id="completed" data-completed="{{this.completed}}">Completed: {{this.completed}}</h2>
+    <h2 id="part" data-part="{{this.part}}">Part: {{this.part}}/4</h2>
+    <h2 id="user-name" data-username="{{this.username}}">Logged in as: {{this.username}}</h2>
     <div class="well">
       <h3>Group members</h3>
       <div id="group-members">

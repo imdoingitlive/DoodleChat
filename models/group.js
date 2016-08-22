@@ -8,6 +8,11 @@ module.exports = function(sequelize, DataTypes) {
       notNull: true,
       type: DataTypes.INTEGER,
       defaultValue: 0
+    },
+    part: {
+      notNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 1
     }
   }, {
     // don't use camelcase for automatically added attributes but underscore style

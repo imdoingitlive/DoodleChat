@@ -184,7 +184,7 @@ var Sketch;
 })(jQuery);
 
 // Start of Custom scripting
-function addCanvas() {
+function addCanvas(caption) {
   // Add tools
   var $done = $('<a>').attr('href','#colors_sketch').attr('data-send','png').css('width','100px').text('Done');
   var $tools = $('<div>').attr('id','tools').append($done);
@@ -198,11 +198,12 @@ function addCanvas() {
   for (var i=0; i<sizes.length; i++) {
     var $a = $('<a>').attr('href','#colors_sketch').attr('data-size',sizes[i]).css('background','#ccc').text(sizes[i]);
     $tools.append($a);
-  }
+  }// Add caption
+  var $caption = $('<h1>').attr('id','caption').text(caption);
   // Add canvas
   var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/test');
   var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
-  var $canvasHolder = $('<div>').attr('id','canvas').append($img).append($canvas);
+  var $canvasHolder = $('<div>').attr('id','canvas').append($img).append($canvas).append($caption);
   // Add tools and canvas to wrapper
   var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($tools).append($canvasHolder);
   $('.container').append($canvasWrapper);
@@ -210,8 +211,8 @@ function addCanvas() {
   $('#colors_sketch').sketch();
 };
 
-function addWaiting() {
-  $('.container').append('<h1>Waiting for group member to finish sketch</h1>');
+function addWaiting(part) {
+  $('.container').append('<h1>Waiting for group member to finish part ' + part + ' sketch</h1>');
 }
 
  // Grab the URL of the website
@@ -221,13 +222,33 @@ var currentURL = window.location;
 var groupnameEncoded = currentURL.pathname.slice(8)
 var groupname = decodeURIComponent(groupnameEncoded);
 
+// Save completed and part
+var completed = {
+  completed: $('#completed').attr('data-completed')
+};
+var part = $('#part').attr('data-part');
+
 // AJAX get the page 
-$.get(currentURL + "/story", function(res) {
+$.post(currentURL + "/story", completed, function(res) {
+
+  console.log(res)
+
+  var storyID = completed+1;
+
+  // Switch statement for caption
+  var caption;
+  switch (part) {
+    case '1': caption = res.caption1; break;
+    case '2': caption = res.caption2; break;
+    case '3': caption = res.caption3; break;
+    case '4': caption = res.caption4; break;
+  }
 
   // Save story information to local storage
-  localStorage.setItem("storyID",res.storyID);
-  localStorage.setItem("pageID",res.pageID);
-  localStorage.setItem("caption",res.caption);
+  localStorage.setItem("caption1",res.caption1);
+  localStorage.setItem("caption2",res.caption2);
+  localStorage.setItem("caption3",res.caption3);
+  localStorage.setItem("caption4",res.caption4);
 
   // Add custom prototype for sending
   Sketch.prototype.send = function(format) {
@@ -245,14 +266,15 @@ $.get(currentURL + "/story", function(res) {
     // Save dataURL
     var dataURL = this.el.toDataURL(mime);
     // Send dataURL through socket
-    return socket.emit('send sketch', dataURL, groupnameEncoded + '/' + res.storyID + '/' + res.pageID);
+    // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
+    return socket.emit('send sketch', dataURL, groupnameEncoded + '/' + storyID + '/' + part);
   };
 
   // Check if canvas should be shown
-  if (res.pageID === 1)
-    addCanvas();
+  if (part === '1')
+    addCanvas(caption);
   else
-    addWaiting();
+    addWaiting(part);
   
 });
 

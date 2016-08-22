@@ -35,11 +35,6 @@ socketio.connection = function (socket) {
 
   });
 
-  // Listen for get requestion
-  socket.on('get sketch', function(id) {
-  	socket.emit('sketch url','https://s3.amazonaws.com/project2storyboard/' + id);
-  });
-
 }
 
 module.exports = socketio;

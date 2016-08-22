@@ -244,18 +244,20 @@ var returnRouter = function(io) {
 		  }).then(function(group) {
 
 				// Associate user with group
-				group.getUsers().then(function(results) {
+				group.getUsers().then(function(users) {
 
 					var obj = {
 						username: req.user.username,
 						groupname: groupname,
-						groupmembers: []
+						groupmembers: [],
+						completed: group.dataValues.completed,
+						part: group.dataValues.part
 					}
 
 					// Go through all the users and add usernames
-		    	for (var i in results) {
+		    	for (var i in users) {
 		    		// Add all usernames to group
-		    		obj.groupmembers.push(results[i].dataValues.username)
+		    		obj.groupmembers.push(users[i].dataValues.username)
 		    	}
 
 		    	// Emit the newest user
@@ -275,35 +277,27 @@ var returnRouter = function(io) {
 	});
 
 	// AJAX request for story
-	router.get('/sketch/:groupname/story', isLoggedIn, function(req, res) {
+	router.post('/sketch/:groupname/story', isLoggedIn, function(req, res) {
 
-		var groupname = req.params.groupname;
+		var completed = req.body.completed;
 
-		// Get sequelize group object
-			models.Group.findOne({
-		    where: {groupname: groupname}
-		  }).then(function(group) {
+		models.Story.findOne({
+  		where: {storyID: completed+1}
+  	}).then(function(stories) {
 
-				// Associate user with group
-				// CHANGE TO GET PAGE
-				group.getUsers().then(function(results) {
+  		var obj = {
+				caption1: stories.dataValues.caption1,
+				caption2: stories.dataValues.caption2,
+				caption3: stories.dataValues.caption3,
+				caption4: stories.dataValues.caption4,
+			}
 
-					var obj = {
-						storyID: 1,
-						pageID: 1,
-						caption: "A man"
-					}
+			// Send group name and group members
+			res.json(obj);
 
-					// Send group name and group members
-					res.json(obj);
-
-				}).error(function(err) {
-			    console.log(err);
-			  })
-
-			}).error(function(err) {
-		    console.log(err);
-		  })
+  	}).error(function(err) {
+	    console.log(err);
+	  })
 		
 	});
 

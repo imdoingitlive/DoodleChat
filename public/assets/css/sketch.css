@@ -33,3 +33,8 @@
   color: black;
   font-weight: bold;
 }
+
+#caption {
+  position: absolute;
+  top: 350px;
+}
