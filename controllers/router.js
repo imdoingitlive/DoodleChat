@@ -274,6 +274,39 @@ var returnRouter = function(io) {
 		
 	});
 
+	// AJAX request for story
+	router.get('/sketch/:groupname/story', isLoggedIn, function(req, res) {
+
+		var groupname = req.params.groupname;
+
+		// Get sequelize group object
+			models.Group.findOne({
+		    where: {groupname: groupname}
+		  }).then(function(group) {
+
+				// Associate user with group
+				// CHANGE TO GET PAGE
+				group.getUsers().then(function(results) {
+
+					var obj = {
+						storyID: 1,
+						pageID: 1,
+						caption: "A man"
+					}
+
+					// Send group name and group members
+					res.json(obj);
+
+				}).error(function(err) {
+			    console.log(err);
+			  })
+
+			}).error(function(err) {
+		    console.log(err);
+		  })
+		
+	});
+
 	// =====================================
 	// LOGOUT ==============================
 	// =====================================

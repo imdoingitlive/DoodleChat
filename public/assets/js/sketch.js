@@ -201,18 +201,69 @@ var __slice = Array.prototype.slice;
   };
 })(jQuery);
 
+// <div id="canvas-wrapper">
+
+//   <div id="tools">
+//     <a href="#colors_sketch" data-send="png" style="float: right; width: 100px;">Send</a>
+//   </div>
+
+//   <div id="canvas">
+//     <img crossOrigin="annoymous" id="bk" src="https://s3.amazonaws.com/project2storyboard/test">
+//     <canvas id="colors_sketch" width="800" height="300"></canvas>
+//   </div>
+
+// </div>
+
 // Start of Custom scripting
- $(function() {
+function addCanvas() {
+  // Add tools
+  var $done = $('<a>').attr('href','#colors_sketch').attr('data-send','png').css('width','100px').text('Done');
+  var $tools = $('<div>').attr('id','tools').append($done);
   // Add colors
-  $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
-    $('#colors_demo .tools').append("<a href='#colors_sketch' data-color='" + this + "' style='width: 10px; background: " + this + ";'></a> ");
-  });
+  var colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'];
+  for (var i=0; i<colors.length; i++) {
+    var $a = $('<a>').attr('href','#colors_sketch').attr('data-color',colors[i]).css('width','10px').css('background',colors[i]);
+    $tools.append($a);
+    // $tools.append("<a href='#colors_sketch' data-color='" + val + "' style='width: 10px; background: " + val + ";'></a> ");
+  }
+
   // Add sizes
-  $.each([3, 5, 10, 15], function() {
-    $('#colors_demo .tools').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
-  });
+  var sizes = [3, 5, 10, 15];
+  for (var i=0; i<sizes.length; i++) {
+    var $a = $('<a>').attr('href','#colors_sketch').attr('data-size',sizes[i]).css('background','#ccc').text(sizes[i]);
+    $tools.append($a);
+  }
+    //$tools.append("<a href='#colors_sketch' data-size='" + val + "' style='background: #ccc'>" + val + "</a> ");
+
+  // Add canvas
+  var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/test');
+  var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
+  var $canvasHolder = $('<div>').attr('id','canvas').append($img).append($canvas);
+  // Add tools and canvas to wrapper
+  var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($tools).append($canvasHolder);
+  $('.container').append($canvasWrapper);
   // Start the sketching
   $('#colors_sketch').sketch();
+};
+
+ // Grab the URL of the website
+var currentURL = window.location;
+
+// Save groupname
+var groupname = decodeURIComponent(currentURL.pathname.slice(8));
+
+// AJAX get the page 
+$.get(currentURL + "/story", function(res) {
+
+  // Save story information to local storage
+  localStorage.setItem("storyID",res.storyID);
+  localStorage.setItem("pageID",res.pageID);
+  localStorage.setItem("caption",res.caption);
+
+  // Check if canvas should be shown
+  if (res.pageID === 1)
+    addCanvas();
+  
 });
 
 // Socket io
@@ -227,12 +278,14 @@ socket.on('new user', function(newUser) {
       alreadyAdded = true;
     }
   });
+  // If if not already added
   if (!alreadyAdded)
     $('#group-members').append('<p>' + newUser + '</p>');
 });
 
 // Send get request for sketch
 socket.emit('get sketch', 'test');
+
 // Show data received
 socket.on('sketch url', function (data) {
   console.log(data)

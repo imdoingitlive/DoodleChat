@@ -11,8 +11,6 @@ var s3Bucket = new AWS.S3( { params: {Bucket: 'project2storyboard'} } );
 var socketio = {};
 
 socketio.connection = function (socket) {
-	// First emit data
-  //socket.emit('sketch');
 
   // When sketch is sent, receive data and send to AWS
   socket.on('send sketch', function (dataURL,key) {
