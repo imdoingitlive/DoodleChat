@@ -4,12 +4,20 @@ Drawing app for the second group project of Rutgers Coding Bootcamp.
 ## Screenshots
 Include a one or two screenshots of main UI/UX points of your app and how it solves a problem
 
+```
+### Create a Story
+
+![Alt text](/readme_images/customer01.jpg?raw=true "BamazonCustomer.js")
+```
+
 ## Technologies used
 You can give a brief listing of the technologies you've learned and applied here
 - node.js
 - Express
 - Handblebars
-- mongodb
+- MySql
+- Sequelize
+- socketio
 
 ## Getting Started
 
@@ -23,7 +31,6 @@ What to install and how for local development and testing purposes
 - node.js: visit node.js and download...
 - mongodb: npm install -g mongodb
 - mysqldb: brew install mysql
-- jasmine: npm i -g jasmine
 ```
 
 ## Running the tests
@@ -31,9 +38,10 @@ What to install and how for local development and testing purposes
 Explain how to run the automated tests for this system (if applicable)
 
 ```
-jasmine
+To Start the Server:
 
-jasmine spec/appSpec.js
+node ./bin/www
+
 ```
 
 ## Built With
