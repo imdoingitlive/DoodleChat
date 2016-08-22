@@ -212,7 +212,7 @@ var Sketch;
 })(jQuery);
 
 // Start of Custom scripting
-function addCanvas(part,caption,groupnameEncoded,storyID) {
+function addCanvas(obj) {
   // Add tools
   var $done = $('<a>').attr('href','#colors_sketch').attr('data-send','png').css('width','100px').text('Done');
   var $tools = $('<div>').attr('id','tools').append($done);
@@ -227,15 +227,15 @@ function addCanvas(part,caption,groupnameEncoded,storyID) {
     var $a = $('<a>').attr('href','#colors_sketch').attr('data-size',sizes[i]).css('background','#ccc').text(sizes[i]);
     $tools.append($a);
   }// Add caption
-  var $caption = $('<h1>').attr('id','caption').text(caption);
+  var $caption = $('<h1>').attr('id','caption').text(obj.caption);
   // Add canvas
   var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
   var $canvasHolder = $('<div>').attr('id','canvas').append($canvas).append($caption);
   // Only add image back if the part is not first
-  if (part !== '1') {
+  if (obj.part !== '1') {
     // Add img
-    var previousPart = String(Number(part)-1);
-    var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/' + groupnameEncoded  + '/' + storyID + '/' + previousPart);
+    var previousPart = String(Number(obj.part)-1);
+    var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/' + obj.groupnameEncoded  + '/' + obj.storyID + '/' + previousPart);
     $canvasHolder.append($img)
   }
   // Add tools and canvas to wrapper
@@ -256,18 +256,23 @@ var currentURL = window.location;
 var groupnameEncoded = currentURL.pathname.slice(8)
 var groupname = decodeURIComponent(groupnameEncoded);
 
+// Save username
+var username = $('#user-name').attr('data-username');
+
+// Compute storyID currently on from completed
+var completed = $('#completed').attr('data-completed');
+var storyID = String(Number(completed) + 1);
+
 // Save completed and part
-var completed = {
-  completed: $('#completed').attr('data-completed')
+var completedObj = {
+  completed: completed
 };
 var part = $('#part').attr('data-part');
 
 // AJAX get the page 
-$.post(currentURL + "/story", completed, function(res) {
+$.post(currentURL + "/story", completedObj, function(res) {
 
   console.log(res)
-
-  var storyID = completed+1;
 
   // Switch statement for caption
   var caption;
@@ -285,8 +290,16 @@ $.post(currentURL + "/story", completed, function(res) {
   localStorage.setItem("caption4",res.caption4);
 
   // Check if canvas should be shown
-  if (part === '1')
-    addCanvas(part,caption,groupnameEncoded,storyID);
+  if (username === $('#group-members>p').eq(Number(part)-1).text()) {
+    var obj = {
+      part: part,
+      caption: caption,
+      groupnameEncoded: groupnameEncoded,
+      storyID: storyID
+    }
+    console.log(obj)
+    addCanvas(obj);
+  }    
   else
     addWaiting(part);
   

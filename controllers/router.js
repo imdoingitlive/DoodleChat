@@ -184,6 +184,13 @@ var returnRouter = function(io) {
 	  	return
 	  }
 
+	  // Groupname validation
+		var regex = /^[a-zA-Z0-9]+$/;
+	  if(!req.body.groupname.match(regex)) {
+	  	res.json({message: 'Please only use alpha-numeric characters with no spaces'});
+	  	return
+	  }
+	  
 		// Check if groupname exists
 		models.Group.findOne({
 	    where: {groupname: req.body.groupname}

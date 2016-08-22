@@ -54,6 +54,12 @@ module.exports = function(passport) {
           if (user !== null) {
             return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
           }
+          // Groupname validation
+          var regex = /^[a-zA-Z0-9]+$/;
+          if(!username.match(regex)) {
+            return done(null, false, req.flash('signupMessage','Please only use alpha-numeric characters with no spaces'));
+            
+          }
           // Create if not
           models.User.create({
             username: username,
