@@ -1,7 +1,7 @@
 // Sketch.js
 var __slice = Array.prototype.slice;
+var Sketch;
 (function($) {
-  var Sketch;
   $.fn.sketch = function() {
     var args, key, sketch;
     key = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -78,24 +78,6 @@ var __slice = Array.prototype.slice;
       }
       mime = "image/" + format;
       return window.open(this.el.toDataURL(mime));
-    };
-    // Custom prototype for sending
-    Sketch.prototype.send = function(format) {
-      // Save background
-      this.context.globalCompositeOperation = 'destination-over';
-      this.context.drawImage(bk, 0, 0);
-      this.context.globalCompositeOperation = 'source-over';
-      // Get MIME type
-      var mime;
-      format || (format = "png");
-      if (format === "jpg") {
-        format = "jpeg";
-      }
-      mime = "image/" + format;
-      // Save dataURL
-      var dataURL = this.el.toDataURL(mime);
-      // Send dataURL through socket
-      return socket.emit('send sketch', dataURL, 'test2');
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
@@ -201,19 +183,6 @@ var __slice = Array.prototype.slice;
   };
 })(jQuery);
 
-// <div id="canvas-wrapper">
-
-//   <div id="tools">
-//     <a href="#colors_sketch" data-send="png" style="float: right; width: 100px;">Send</a>
-//   </div>
-
-//   <div id="canvas">
-//     <img crossOrigin="annoymous" id="bk" src="https://s3.amazonaws.com/project2storyboard/test">
-//     <canvas id="colors_sketch" width="800" height="300"></canvas>
-//   </div>
-
-// </div>
-
 // Start of Custom scripting
 function addCanvas() {
   // Add tools
@@ -249,7 +218,8 @@ function addWaiting() {
 var currentURL = window.location;
 
 // Save groupname
-var groupname = decodeURIComponent(currentURL.pathname.slice(8));
+var groupnameEncoded = currentURL.pathname.slice(8)
+var groupname = decodeURIComponent(groupnameEncoded);
 
 // AJAX get the page 
 $.get(currentURL + "/story", function(res) {
@@ -258,6 +228,25 @@ $.get(currentURL + "/story", function(res) {
   localStorage.setItem("storyID",res.storyID);
   localStorage.setItem("pageID",res.pageID);
   localStorage.setItem("caption",res.caption);
+
+  // Add custom prototype for sending
+  Sketch.prototype.send = function(format) {
+    // Save background
+    this.context.globalCompositeOperation = 'destination-over';
+    this.context.drawImage(bk, 0, 0);
+    this.context.globalCompositeOperation = 'source-over';
+    // Get MIME type
+    var mime;
+    format || (format = "png");
+    if (format === "jpg") {
+      format = "jpeg";
+    }
+    mime = "image/" + format;
+    // Save dataURL
+    var dataURL = this.el.toDataURL(mime);
+    // Send dataURL through socket
+    return socket.emit('send sketch', dataURL, groupnameEncoded + '/' + res.storyID + '/' + res.pageID);
+  };
 
   // Check if canvas should be shown
   if (res.pageID === 1)
@@ -282,12 +271,4 @@ socket.on(groupname + 'new user', function(newUser) {
   // If if not already added
   if (!alreadyAdded)
     $('#group-members').append('<p>' + newUser + '</p>');
-});
-
-// Send get request for sketch
-socket.emit('get sketch', 'test');
-
-// Show data received
-socket.on('sketch url', function (data) {
-  console.log(data)
 });
