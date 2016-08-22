@@ -259,7 +259,7 @@ var returnRouter = function(io) {
 		    	}
 
 		    	// Emit the newest user
-		    	io.sockets.emit('new user', req.user.username);
+		    	io.sockets.emit(groupname + 'new user', req.user.username);
 
 					// Send group name and group members
 					res.render('sketch', obj);

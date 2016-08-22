@@ -223,18 +223,13 @@ function addCanvas() {
   var colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'];
   for (var i=0; i<colors.length; i++) {
     var $a = $('<a>').attr('href','#colors_sketch').attr('data-color',colors[i]).css('width','10px').css('background',colors[i]);
-    $tools.append($a);
-    // $tools.append("<a href='#colors_sketch' data-color='" + val + "' style='width: 10px; background: " + val + ";'></a> ");
-  }
-
+    $tools.append($a);}
   // Add sizes
   var sizes = [3, 5, 10, 15];
   for (var i=0; i<sizes.length; i++) {
     var $a = $('<a>').attr('href','#colors_sketch').attr('data-size',sizes[i]).css('background','#ccc').text(sizes[i]);
     $tools.append($a);
   }
-    //$tools.append("<a href='#colors_sketch' data-size='" + val + "' style='background: #ccc'>" + val + "</a> ");
-
   // Add canvas
   var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/test');
   var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
@@ -245,6 +240,10 @@ function addCanvas() {
   // Start the sketching
   $('#colors_sketch').sketch();
 };
+
+function addWaiting() {
+  $('.container').append('<h1>Waiting for group member to finish sketch</h1>');
+}
 
  // Grab the URL of the website
 var currentURL = window.location;
@@ -263,6 +262,8 @@ $.get(currentURL + "/story", function(res) {
   // Check if canvas should be shown
   if (res.pageID === 1)
     addCanvas();
+  else
+    addWaiting();
   
 });
 
@@ -270,7 +271,7 @@ $.get(currentURL + "/story", function(res) {
 var socket = io.connect();
 
 // Send username
-socket.on('new user', function(newUser) {
+socket.on(groupname + 'new user', function(newUser) {
   var alreadyAdded = false;
   $('#group-members>p').each(function() {
     var username = $(this).text();
