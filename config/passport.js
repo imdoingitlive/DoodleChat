@@ -21,6 +21,7 @@ module.exports = function(passport) {
 
   // used to deserialize the user
   passport.deserializeUser(function(id, done) {
+    // Find username
     models.User.findOne({
       where: {id: id}
     }).then(function(user){
@@ -45,12 +46,19 @@ module.exports = function(passport) {
         passReqToCallback: true // allows us to pass back the entire request to the callback
       },
       function(req, username, password, done) {
+        // Find username
         models.User.findOne({
           where: {username: username}
         }).then(function(user){
           // If username already found in database
           if (user !== null) {
             return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+          }
+          // Groupname validation
+          var regex = /^[a-zA-Z0-9]+$/;
+          if(!username.match(regex)) {
+            return done(null, false, req.flash('signupMessage','Please only use alpha-numeric characters with no spaces'));
+            
           }
           // Create if not
           models.User.create({

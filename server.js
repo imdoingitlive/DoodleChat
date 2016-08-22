@@ -44,8 +44,17 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
+// Socket io
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+// Run socket io scripts
+require('./controllers/socketio')(io);
+//io.on('connection', socketio.connection);
+
+
 // Routing
-var routes = require('./controllers/router');
+var routes = require('./controllers/router')(io);
 app.use('/', routes);
 
 // Catch 404 and forward to error handler
@@ -65,4 +74,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
-module.exports = app
+module.exports.app = app;
+module.exports.server = server;
+module.exports.io = io;

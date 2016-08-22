@@ -1,0 +1,58 @@
+<div class="container">
+
+  <div class="page-header text-center">
+    <h1>Group</h1>
+    <h2>Logged in as: {{this.username}}</h2>
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+  </div>
+
+  <div class="row">
+
+    <div class="col-sm-4">
+      <div class="well" id="your-groups">
+        <h3>Your Groups</h3>
+        {{#each this.groupnames}}
+          <div>
+            <p>{{this}}</p>
+            <button class="btn btn-info sketch" data-group="{{this}}" type="button">Go</button>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="well" id="find-group">
+
+        <h3>Find a Group</h3>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Group name..." id="find-input">
+          <span class="input-group-btn">
+            <button class="btn btn-info" type="button" id="find-submit">Find</button>
+          </span>
+        </div>
+        <br>
+
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="well" id="create-group">
+
+        <h3>Create a Group</h3>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Group name..." id="create-input">
+          <span class="input-group-btn">
+            <button class="btn btn-info" type="button" id="create-submit">Create</button>
+          </span>
+        </div>
+        <br>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Sketch JS -->
+<script src="./assets/js/groups.js"></script>

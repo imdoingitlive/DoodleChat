@@ -3,6 +3,16 @@ module.exports = function(sequelize, DataTypes) {
     groupname: {
       notNull: true,
       type: DataTypes.STRING
+    },
+    completed: {
+      notNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    part: {
+      notNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 1
     }
   }, {
     // don't use camelcase for automatically added attributes but underscore style
