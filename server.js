@@ -8,7 +8,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var passport = require('passport');
-var flash    = require('connect-flash')
 
 var app = express();
 
@@ -42,7 +41,7 @@ app.use(session({
  } )); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(passport.authenticate('remember-me'));
 
 // Socket io
 var server = require('http').Server(app);
