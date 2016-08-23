@@ -4,6 +4,11 @@ module.exports = function(sequelize, DataTypes) {
       notNull: true,
       type: DataTypes.STRING
     },
+    totalusers: {
+      notNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 1
+    },
     completed: {
       notNull: true,
       type: DataTypes.INTEGER,

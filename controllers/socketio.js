@@ -35,28 +35,30 @@ var returnSocket = function(io) {
 		      } else {
 		        console.log('Succesfully uploaded the image!');
 		      }
-		  });
-		  // Increment part
-		  models.Group.findOne({
-				where: {groupname: obj.groupname}
-			}).then(function(group) {
+		      return
+		  }).then(function() {
+		  	// Increment part
+			  models.Group.findOne({
+					where: {groupname: obj.groupname}
+					}).then(function(group) {
 
-				// Increment the part by one
-				var part = group.dataValues.part;
-				group.updateAttributes({
-					part: part+1
-				}).then(function() {
+						// Increment the part by one
+						var part = group.dataValues.part;
+						group.updateAttributes({
+							part: part+1
+						}).then(function() {
 
-					// Force group to reload
-					io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
-					
-				}).error(function(err) {
-			    console.log(err);
+							// Force group to reload
+							io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+							
+						}).error(function(err) {
+					    console.log(err);
+					  })
+
+					}).error(function(err) {
+				    console.log(err);
+				  })
 			  })
-
-			}).error(function(err) {
-		    console.log(err);
-		  })
 
 	  });
 

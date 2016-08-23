@@ -68,31 +68,54 @@ var returnRouter = function(io) {
 	// we will use route middleware to verify this (the isLoggedIn function)
 	router.get('/groups', isLoggedIn, function(req, res) {
 
-		// Get sequelize user object
-		models.User.findOne({
-			where: {username: req.user.username}
-		}).then(function(user) {
+		// Create obj for rendering
+		var hbsObject = {
+			username: req.user.username,
+			recentGroups: [],
+			userGroups: []
+		};
 
-			// Retrieve all groups from user
-			user.getGroups().then(function(groups) {
-				// Create handlbears object for group
-				var hbsObject = {
-					username: req.user.username,
-					groupids: [],
-					groupnames: []
-				};
-				for (var i in groups) {
-					hbsObject.groupids.push(groups[i].dataValues.id);
-					hbsObject.groupnames.push(groups[i].dataValues.groupname);
+		// Find most recently created groups
+		models.Group.findAll({
+			limit: 5,
+			order: 'created_at DESC'
+		}).then(function(recentGroups){
+			// Add recent groups
+			for (var i in recentGroups) {
+				var obj = {
+					groupname: recentGroups[i].dataValues.groupname,
+					totalusers: recentGroups[i].dataValues.totalusers
 				}
-				// Render group page with groups
-	  		res.render('groups', hbsObject);
-			})
+				hbsObject.recentGroups.push(obj);
+			}
+			return
+		}).then(function() {
+			// Get sequelize user object
+			models.User.findOne({
+				where: {username: req.user.username}
+			}).then(function(user) {
 
-		}).error(function(err) {
-	    console.log(err);
-	  })
-		
+				// Retrieve all groups from user
+				user.getGroups().then(function(groups) {
+					// Add user's groups
+					for (var i in groups) {
+						var obj = {
+							groupname: groups[i].dataValues.groupname,
+							totalusers: groups[i].dataValues.totalusers
+						}
+						hbsObject.userGroups.push(obj);
+					}
+					// Render group page with groups
+		  		res.render('groups', hbsObject);
+				}).error(function(err) {
+			    console.log(err);
+			  })
+
+			}).error(function(err) {
+		    console.log(err);
+		  })
+		})
+			
 	});
 
 	// When hitting find group button
@@ -118,7 +141,8 @@ var returnRouter = function(io) {
 	    // Check if user is in group
 	    group.getUsers().then(function(results) {
 	    	var obj = {
-	    		group: group.dataValues.groupname
+	    		groupname: group.dataValues.groupname,
+	    		totalusers: group.dataValues.totalusers
 	    	};
 	    	// Go through all the users to see if user is in group
 	    	for (var i in results) {
@@ -152,6 +176,14 @@ var returnRouter = function(io) {
 			models.Group.findOne({
 		    where: {groupname: req.body.groupname}
 		  }).then(function(group) {
+
+		  	// Increment the totalusers by one
+				var totalusers = group.dataValues.totalusers;
+				return group.updateAttributes({
+					totalusers: totalusers+1
+				})
+
+			}).then(function(group) {
 
 				// Associate user with group
 				group.addUser(user).then(function() {
@@ -244,40 +276,40 @@ var returnRouter = function(io) {
 		var groupname = req.params.groupname;
 
 		// Get sequelize group object
-			models.Group.findOne({
-		    where: {groupname: groupname}
-		  }).then(function(group) {
+		models.Group.findOne({
+	    where: {groupname: groupname}
+	  }).then(function(group) {
 
-				// Associate user with group
-				group.getUsers().then(function(users) {
+			// Associate user with group
+			group.getUsers().then(function(users) {
 
-					var obj = {
-						username: req.user.username,
-						groupname: groupname,
-						groupmembers: [],
-						completed: group.dataValues.completed,
-						part: group.dataValues.part
-					}
+				var obj = {
+					username: req.user.username,
+					groupname: groupname,
+					groupmembers: [],
+					completed: group.dataValues.completed,
+					part: group.dataValues.part
+				}
 
-					// Go through all the users and add usernames
-		    	for (var i in users) {
-		    		// Add all usernames to group
-		    		obj.groupmembers.push(users[i].dataValues.username)
-		    	}
+				// Go through all the users and add usernames
+	    	for (var i in users) {
+	    		// Add all usernames to group
+	    		obj.groupmembers.push(users[i].dataValues.username)
+	    	}
 
-		    	// Emit the newest user
-		    	io.sockets.emit(groupname + 'new user', req.user.username);
+	    	// Emit the newest user
+	    	io.sockets.emit(groupname + 'new user', req.user.username);
 
-					// Send group name and group members
-					res.render('sketch', obj);
-
-				}).error(function(err) {
-			    console.log(err);
-			  })
+				// Send group name and group members
+				res.render('sketch', obj);
 
 			}).error(function(err) {
 		    console.log(err);
 		  })
+
+		}).error(function(err) {
+	    console.log(err);
+	  })
 		
 	});
 

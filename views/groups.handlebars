@@ -11,10 +11,10 @@
     <div class="col-sm-4">
       <div class="well" id="your-groups">
         <h3>Your Groups</h3>
-        {{#each this.groupnames}}
+        {{#each this.userGroups}}
           <div>
-            <p>{{this}}</p>
-            <button class="btn btn-info sketch" data-group="{{this}}" type="button">Go</button>
+            <p>{{this.groupname}} {{this.totalusers}}/4</p>
+            <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go</button>
           </div>
         {{/each}}
       </div>
@@ -22,15 +22,26 @@
 
     <div class="col-sm-4">
       <div class="well" id="find-group">
-
-        <h3>Find a Group</h3>
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Group name..." id="find-input">
-          <span class="input-group-btn">
-            <button class="btn btn-info" type="button" id="find-submit">Find</button>
-          </span>
+        
+        <div id="wrapper-find-group">
+          <h3>Find a Group</h3>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Group name..." id="find-input">
+            <span class="input-group-btn">
+              <button class="btn btn-info" type="button" id="find-submit">Find</button>
+            </span>
+          </div>
+          <br>
         </div>
-        <br>
+
+        <div id="wrapper-recently-created">
+          <h3>Most Recently Created Groups</h3>
+          {{#each this.recentGroups}}
+            <div>
+              <p>{{this.groupname}} {{this.totalusers}}/4</p>
+            </div>
+          {{/each}}
+        </div>
 
       </div>
     </div>

@@ -1,5 +1,5 @@
 // Grab the URL of the website
-var currentURL = window.location.origin;
+var baseURL = window.location.origin;
 
 // Capture find group submit
 $(document).on("click", "#find-submit", function() {
@@ -14,7 +14,7 @@ $(document).on("click", "#find-submit", function() {
 	$("#find-input").val('');
 
 	// AJAX post the group name 
-	$.post(currentURL + "/findgroup", obj, function(res) {
+	$.post(baseURL + "/findgroup", obj, function(res) {
 
 		// Remove previous messages and serach groups
 		$('.message').remove();
@@ -22,19 +22,19 @@ $(document).on("click", "#find-submit", function() {
 
 		// Append message
 		if (res.message) {
-			$("#find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
+			$("#wrapper-find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
 		}
 
 		// Append group
-		if (res.group) {
-			var $p = $("<p>").text(res.group);
+		if (res.groupname) {
+			var $p = $("<p>").text(res.groupname + " " + res.totalusers + "/4");
 			var $div = $("<div>").attr("id","search-group").append($p);
 			// If not joined append join button
 			if (!res.joined) {
-				var $but = $("<button>").addClass("btn btn-info").attr("data-group",res.group).attr("type","button").attr("id","join-submit").text("Join");
+				var $but = $("<button>").addClass("btn btn-info").attr("data-group",res.groupname).attr("type","button").attr("id","join-submit").text("Join");
 				$div.append($but);
 			}
-			$('#find-group').append($div);
+			$('#wrapper-find-group').append($div);
 		}
 		
 	});
@@ -52,7 +52,7 @@ $(document).on("click", "#join-submit", function() {
 	}
 
 	// AJAX post the group name 
-	$.post(currentURL + "/joingroup", obj, function(res) {
+	$.post(baseURL + "/joingroup", obj, function(res) {
 
 		// Remove previous messages and serach groups
 		$('.message').remove();
@@ -60,7 +60,7 @@ $(document).on("click", "#join-submit", function() {
 
 		// Append message
 		if (res.message) {
-			$("#find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
+			$("#wrapper-find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
 		}
 
 		// Append group
@@ -69,7 +69,7 @@ $(document).on("click", "#join-submit", function() {
 			// var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
 			// var $div = $("<div>").append($p).append($but)
 			// $('#your-groups').append($div);
-			window.location = currentURL + "/groups";
+			window.location = baseURL + "/groups";
 		}
 		
 	});
@@ -90,7 +90,7 @@ $(document).on("click", "#create-submit", function() {
 	$("#create-input").val('');
 
 	// AJAX post the group name 
-	$.post(currentURL + "/creategroup", obj, function(res) {
+	$.post(baseURL + "/creategroup", obj, function(res) {
 
 		// Remove previous messages and serach groups
 		$('.message').remove();
@@ -107,7 +107,7 @@ $(document).on("click", "#create-submit", function() {
 			// var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
 			// var $div = $("<div>").append($p).append($but)
 			// $('#your-groups').append($div);
-			window.location = currentURL + "/groups";
+			window.location = baseURL + "/groups";
 		}
 		
 	});
@@ -125,7 +125,7 @@ $(document).on("click", ".sketch", function() {
 	$("#create-input").val('');
 
 	// Go to group sketch
-	window.location = currentURL + "/sketch/" + groupname;
+	window.location = baseURL + "/sketch/" + groupname;
 
 	return false;
 });
