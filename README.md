@@ -4,9 +4,9 @@ Drawing app for the second group project of Rutgers Coding Bootcamp.
 ## Screenshots
 Include a one or two screenshots of main UI/UX points of your app and how it solves a problem
 
-```
 ### Create a Story
 
+```
 ![Alt text](/readme_images/customer01.jpg?raw=true "BamazonCustomer.js")
 ```
 
