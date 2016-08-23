@@ -1,8 +1,8 @@
 // Load all strategies
 var LocalStrategy = require('passport-local').Strategy;
+var RememberMeStrategy = require('passport-remember-me').Strategy;
 
 // Load up the user model
-//var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
 var models  = require('../models');
 
@@ -52,12 +52,12 @@ module.exports = function(passport) {
         }).then(function(user){
           // If username already found in database
           if (user !== null) {
-            return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+            return done(null, false, {message: 'That username is already taken.'});
           }
           // Groupname validation
           var regex = /^[a-zA-Z0-9]+$/;
           if(!username.match(regex)) {
-            return done(null, false, req.flash('signupMessage','Please only use alpha-numeric characters with no spaces'));
+            return done(null, false, {message: 'Please only use alpha-numeric characters with no spaces'});
             
           }
           // Create if not
@@ -96,10 +96,10 @@ module.exports = function(passport) {
         }).then(function(user){
           // Check if username is found
           if (user == null)
-            return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+            return done(null, false, {message: 'No user found.'}); // req.flash is the way to set flashdata using connect-flash
           // Check if passwords match
           if (!bcrypt.compareSync(password, user.password))
-            return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+            return done(null, false, {message: 'Oops! Wrong password.'}); // create the loginMessage and save it to session as flashdata
           // If all well
           return done(null, user);
         }).error(function(err){
@@ -108,4 +108,26 @@ module.exports = function(passport) {
 
       })
   );
+
+  // =========================================================================
+  // REMEMBER ME =============================================================
+  // =========================================================================
+
+  passport.use(new RememberMeStrategy(
+    function(token, done) {
+      Token.consume(token, function (err, user) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        return done(null, user);
+      });
+    },
+    function(user, done) {
+      var token = utils.generateToken(64);
+      Token.save(token, { userId: user.id }, function(err) {
+        if (err) { return done(err); }
+        return done(null, token);
+      });
+    }
+  ));
+
 };

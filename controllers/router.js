@@ -5,10 +5,8 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var passport = require('passport');
-var flash = require('connect-flash');
 var isLoggedIn = require('./authentication');
 var models  = require('../models');
-//var burger = require('../models/burger.js');
 
 // Wrap router in function call so io can be used
 var returnRouter = function(io) {
@@ -22,46 +20,46 @@ var returnRouter = function(io) {
 	// =====================================
 	// LOGIN ===============================
 	// =====================================
-	// show the login form
-	router.get('/login', function(req, res) {
-		// render the page and pass in any flash data if it exists
-		res.render('login', {
-			message: req.flash('loginMessage')
-		});
-	});
-
 	// process the login form
-	router.post('/login', passport.authenticate('local-login', {
-			successRedirect: '/groups', // redirect to the secure sketch section
-			failureRedirect: '/login', // redirect back to the signup page if there is an error
-			failureFlash: true // allow flash messages
-		}),
-		function(req, res) {
-			if (req.body.remember) {
-				req.session.cookie.maxAge = 1000 * 60 * 3;
-			} else {
-				req.session.cookie.expires = false;
-			}
-			res.redirect('/');
-		});
+	router.post('/login', function(req, res, next) {
+		// If not authenticate
+		passport.authenticate('local-login', function(err, user, info) {
+			if (err) return next(err);
+			if (!user) return res.json(info);
+			req.logIn(user, function(err) {
+				if (err) return next(err);
+				return res.json({redirect: '/groups'});
+			});
+		}) (req, res, next)
+	}, function(req, res, next) {
+    // issue a remember me cookie if the option was checked
+    if (!req.body.remember_me) { return next(); }
+
+    var token = utils.generateToken(64);
+    Token.save(token, { userId: req.user.id }, function(err) {
+      if (err) { return done(err); }
+      res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
+      return next();
+    });
+  },
+  function(req, res) {
+    res.redirect('/');
+  });
 
 	// =====================================
 	// SIGNUP ==============================
 	// =====================================
-	// show the signup form
-	router.get('/signup', function(req, res) {
-		// render the page and pass in any flash data if it exists
-		res.render('signup', {
-			message: req.flash('signupMessage')
-		});
-	});
-
 	// process the signup form
-	router.post('/signup', passport.authenticate('local-signup', {
-		successRedirect: '/groups', // redirect to the secure sketch section
-		failureRedirect: '/signup', // redirect back to the signup page if there is an error
-		failureFlash: true // allow flash messages
-	}));
+	router.post('/signup', function(req, res, next) {
+		passport.authenticate('local-signup', function(err, user, info) {
+			if (err) return next(err);
+			if (!user) return res.json(info);
+			req.logIn(user, function(err) {
+				if (err) return next(err);
+				return res.json({redirect: '/groups'});
+			});
+		}) (req, res, next)
+	});
 
 	// =====================================
 	// GROUP SECTION =========================
