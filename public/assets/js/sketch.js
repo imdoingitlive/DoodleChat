@@ -236,7 +236,7 @@ function addCanvas(obj) {
     // Add img
     var previousPart = String(Number(obj.part)-1);
     var $img = $('<img>').attr('crossOrigin','annoymous').attr('id','bk').attr('src','https://s3.amazonaws.com/project2storyboard/' + obj.groupnameEncoded  + '/' + obj.storyID + '/' + previousPart);
-    $canvasHolder.append($img)
+    $canvasHolder.prepend($img);
   }
   // Add tools and canvas to wrapper
   var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($tools).append($canvasHolder);
