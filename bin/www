@@ -25,6 +25,9 @@ models.sequelize.sync({force: true}).then(function() {
 	// Create stories since force true deletes everything
   require('../config/createStories')();
 
+  // Create test users and group since force true deletes everything
+  require('../config/createUsersandGroup')();
+
 	// set our app to listen to the port we set above
   server.listen(app.get('port'), function() {
   	// then save a log of the listening to our debugger.

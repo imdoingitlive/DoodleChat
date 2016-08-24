@@ -270,6 +270,8 @@ var completedObj = {
 };
 var part = $('#part').attr('data-part');
 
+console.log(completedObj)
+
 // AJAX get the page 
 $.post(currentURL + "/story", completedObj, function(res) {
 

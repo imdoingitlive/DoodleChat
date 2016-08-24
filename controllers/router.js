@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var passport = require('passport');
-var isLoggedIn = require('./authentication');
+var isLoggedIn = require('./isLoggedIn');
 var models  = require('../models');
 
 // Controllers
@@ -44,6 +44,8 @@ var returnRouter = function(io) {
 	// =====================================
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this (the isLoggedIn function)
+
+	// When going to main groups page
 	router.get('/groups', isLoggedIn, groups);
 
 	// When hitting find group button
@@ -60,6 +62,8 @@ var returnRouter = function(io) {
 	// =====================================
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this (the isLoggedIn function)
+
+	// When going to main sketch page
 	router.get('/sketch/:groupname', isLoggedIn, sketch, function(req, res) {
 		// Emit the newest user
   	io.sockets.emit(req.params.groupname + 'new user', req.user.username);

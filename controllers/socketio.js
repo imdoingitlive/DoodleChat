@@ -55,18 +55,36 @@ var returnSocket = function(io) {
 				}
 			}).then(function(group) {
 
-				// Increment the part by one
+				// Check if part is 4
+				var completed = group.dataValues.completed;
 				var part = group.dataValues.part;
-				group.updateAttributes({
-					part: part + 1
-				}).then(function() {
 
-					// Force group to reload
-					io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+				if (part === 4) {
+					// Increment completed by one and reset part
+					group.updateAttributes({
+						completed: completed + 1,
+						part: 1
+					}).then(function() {
 
-				}).error(function(err) {
-					console.log(err);
-				})
+						// Force group to reload
+						io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+
+					}).error(function(err) {
+						console.log(err);
+					})
+				} else {
+					// Increment the part by one
+					group.updateAttributes({
+						part: part + 1
+					}).then(function() {
+
+						// Force group to reload
+						io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+
+					}).error(function(err) {
+						console.log(err);
+					})
+				}				
 
 			}).error(function(err) {
 				console.log(err);
