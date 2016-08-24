@@ -88,7 +88,6 @@ var Sketch;
     // Add custom prototype for sending
     Sketch.prototype.send = function(format, obj) {
       // Save background if part is not 1
-      console.log(obj)
       if (obj.part !== '1') {
         this.context.globalCompositeOperation = 'destination-over';
         this.context.drawImage(bk, 0, 0);
@@ -103,9 +102,11 @@ var Sketch;
       mime = "image/" + format;
       // Save dataURL
       var dataURL = this.el.toDataURL(mime);
+      obj.dataURL = dataURL;
+      console.log(obj)
       // Send dataURL through socket
       // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
-      return socket.emit('send sketch', dataURL, obj);
+      return socket.emit('send sketch', obj);
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
