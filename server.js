@@ -49,8 +49,6 @@ var io = require('socket.io')(server);
 
 // Run socket io scripts
 require('./controllers/socketio')(io);
-//io.on('connection', socketio.connection);
-
 
 // Routing
 var routes = require('./controllers/router')(io);

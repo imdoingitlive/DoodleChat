@@ -8,6 +8,16 @@ var passport = require('passport');
 var isLoggedIn = require('./authentication');
 var models  = require('../models');
 
+// Controllers
+var login = require('./login');
+var signup = require('./signup');
+var groups = require('./groups');
+var findgroup = require('./findgroup');
+var joingroup = require('./joingroup');
+var creategroup = require('./creategroup');
+var sketch = require('./sketch');
+var story = require('./story');
+
 // Wrap router in function call so io can be used
 var returnRouter = function(io) {
 	// =====================================
@@ -21,360 +31,42 @@ var returnRouter = function(io) {
 	// LOGIN ===============================
 	// =====================================
 	// process the login form
-	router.post('/login', function(req, res, next) {
-		// If not authenticate
-		passport.authenticate('local-login', function(err, user, info) {
-			if (err) return next(err);
-			if (!user) return res.json(info);
-			req.logIn(user, function(err) {
-				if (err) return next(err);
-				return res.json({redirect: '/groups'});
-			});
-		}) (req, res, next)
-	}, function(req, res, next) {
-    // issue a remember me cookie if the option was checked
-    if (!req.body.remember_me) { return next(); }
-
-    var token = utils.generateToken(64);
-    Token.save(token, { userId: req.user.id }, function(err) {
-      if (err) { return done(err); }
-      res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
-      return next();
-    });
-  },
-  function(req, res) {
-    res.redirect('/');
-  });
+	router.post('/login', login);
 
 	// =====================================
 	// SIGNUP ==============================
 	// =====================================
 	// process the signup form
-	router.post('/signup', function(req, res, next) {
-		passport.authenticate('local-signup', function(err, user, info) {
-			if (err) return next(err);
-			if (!user) return res.json(info);
-			req.logIn(user, function(err) {
-				if (err) return next(err);
-				return res.json({redirect: '/groups'});
-			});
-		}) (req, res, next)
-	});
+	router.post('/signup', signup);
 
 	// =====================================
 	// GROUP SECTION =========================
 	// =====================================
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this (the isLoggedIn function)
-	router.get('/groups', isLoggedIn, function(req, res) {
-
-		// Create obj for rendering
-		var hbsObject = {
-			username: req.user.username,
-			recentGroups: [],
-			userGroups: []
-		};
-
-		// Find most recently created groups
-		models.Group.findAll({
-			limit: 5,
-			order: 'created_at DESC'
-			// Create a loop through function that is called recursively
-		}).then(function loopThrough(recentGroups, counter) {
-				// Set counter
-				if (counter === undefined) counter = 0;
-				if (counter >= recentGroups.length) return;
-				// Get groupname and totalusers
-				var obj = {
-					groupname: recentGroups[counter].dataValues.groupname,
-					totalusers: recentGroups[counter].dataValues.totalusers
-				}
-				// Check if total users is reached
-				if (obj.totalusers === 4) {
-		  		obj.joined = true; // Even though not actually joined, it does not display ability to join
-		  		// Push obj to recent groups
-		    	hbsObject.recentGroups.push(obj);
-		    	// Recursion
-		    	counter++;
-		    	loopThrough(recentGroups, counter)
-		  	} else {
-		  		// Check if user is in group
-		    	recentGroups[counter].getUsers({where : {username: req.user.username}}).then(function(results) {
-		    		// If no result, not used yet
-			    	if (results.length === 0)
-			    		obj.joined = false;
-			    	else
-			    		obj.joined = true;
-			    	// Push obj to recent groups
-			    	hbsObject.recentGroups.push(obj);
-			    	// Recursion
-			    	counter++;
-			    	loopThrough(recentGroups, counter)
-		    	})
-		  	}				
-
-		}).then(function() {
-			// Get sequelize user object
-			models.User.findOne({
-				where: {username: req.user.username}
-			}).then(function(user) {
-
-				// Retrieve all groups from user
-				user.getGroups().then(function(groups) {
-					// Add user's groups
-					for (var i in groups) {
-						var obj = {
-							groupname: groups[i].dataValues.groupname,
-							totalusers: groups[i].dataValues.totalusers
-						}
-						hbsObject.userGroups.push(obj);
-					}
-					// Render group page with groups
-		  		res.render('groups', hbsObject);
-				}).error(function(err) {
-			    console.log(err);
-			  })
-
-			}).error(function(err) {
-		    console.log(err);
-		  })
-		})
-			
-	});
+	router.get('/groups', isLoggedIn, groups);
 
 	// When hitting find group button
-	router.post('/findgroup', isLoggedIn, function(req, res) {
-
-		// If groupname is empty in database
-	  if (req.body.groupname === '') {
-	  	res.json({message: 'Please enter a non empty group name.'});
-	  	return
-	  }
-
-		// Check if groupname exists
-		models.Group.findOne({
-	    where: {groupname: req.body.groupname}
-	  }).then(function(group){
-	    // If groupname already found in database
-	    if (group === null) {
-	    	res.json({message: 'That group does not exist.'});
-	    	return
-	    }
-	    // Create obj to send back to client
-    	var obj = {
-    		groupname: group.dataValues.groupname,
-    		totalusers: group.dataValues.totalusers
-    	};
-    	// Check if total users is reached
-			if (obj.totalusers === 4) {
-	  		obj.joined = true; // Even though not actually joined, it does not display ability to join
-	  		// Send groupname
-	  		res.json(obj);
-	  		return
-	  	} else {
-		  	// Check if user is in group
-		    group.getUsers({where : {username: req.user.username}}).then(function(results) {
-
-		    	// If no result, not used yet
-		    	if (results.length === 0)
-		    		obj.joined = false;
-		    	else
-		    		obj.joined = true;
-		    	// Send groupname
-		  		res.json(obj);
-
-		    }).error(function(err){
-			    console.log(err);
-			  });
-		  }
-
-	  }).error(function(err){
-	    console.log(err);
-	  });
-
-	});
+	router.post('/findgroup', isLoggedIn, findgroup);
 
 	// When hitting join group button
-	router.post('/joingroup', isLoggedIn, function(req, res) {
-
-		// Get sequelize user object
-		models.User.findOne({
-			where: {username: req.user.username}
-		}).then(function(user) {
-
-			// Get sequelize group object
-			models.Group.findOne({
-		    where: {groupname: req.body.groupname}
-		  }).then(function(group) {
-
-		  	// Check if total users is 4
-		  	var totalusers = group.dataValues.totalusers;
-		  	if (totalusers === 4) {
-		  		res.json({message: 'Unable to join.  Group max reached.'});
-		  		return
-		  	}		  		
-
-		  	// Increment the totalusers by one
-				group.updateAttributes({
-					totalusers: totalusers+1
-				}).then(function(group) {
-
-					// Associate user with group
-					group.addUser(user).then(function() {
-
-						// Send group name
-						res.json({group: group.dataValues.groupname});
-
-					}).error(function(err) {
-				    console.log(err);
-				  })
-
-				}).error(function(err) {
-			    console.log(err);
-				})
-
-			}).error(function(err) {
-		    console.log(err);
-			})
-
-		}).error(function(err) {
-	    console.log(err);
-		})
-
-	});
+	router.post('/joingroup', isLoggedIn, joingroup);
 
 	// When hitting create group button
-	router.post('/creategroup', isLoggedIn, function(req, res) {
-
-		// If groupname is empty in database
-	  if (req.body.groupname === '') {
-	  	res.json({message: 'Please enter a non empty group name.'});
-	  	return
-	  }
-
-	  // Groupname validation
-		var regex = /^[a-zA-Z0-9]+$/;
-	  if(!req.body.groupname.match(regex)) {
-	  	res.json({message: 'Please only use alpha-numeric characters with no spaces'});
-	  	return
-	  }
-	  
-		// Check if groupname exists
-		models.Group.findOne({
-	    where: {groupname: req.body.groupname}
-	  }).then(function(group){
-
-	    // If groupname already found in database
-	    if (group !== null) {
-	    	res.json({message: 'That group is already taken.'});
-	    	return
-	    }
-	    // Create if not and add user
-			models.Group.create({
-		    groupname: req.body.groupname
-		  }).then(function(newGroup) {
-
-		  	// Get sequelize user object
-		  	models.User.findOne({
-		  		where: {username: req.user.username}
-		  	}).then(function(user) {
-
-		  		// Associate user with group
-		  		user.addGroup(newGroup).then(function() {
-
-		  			// Send group name
-		  			res.json({group: newGroup.dataValues.groupname});
-
-		  		}).error(function(err) {
-				    console.log(err);
-				  })
-		  		
-
-		  	}).error(function(err) {
-			    console.log(err);
-			  })
-
-		  }).error(function(err) {
-		    console.log(err);
-		  })
-
-	  }).error(function(err){
-	    console.log(err);
-	  });
-		
-	});
+	router.post('/creategroup', isLoggedIn, creategroup);
 
 	// =====================================
 	// SKETCH SECTION =========================
 	// =====================================
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this (the isLoggedIn function)
-	router.get('/sketch/:groupname', isLoggedIn, function(req, res) {
-
-		var groupname = req.params.groupname;
-
-		// Get sequelize group object
-		models.Group.findOne({
-	    where: {groupname: groupname}
-	  }).then(function(group) {
-
-			// Associate user with group
-			group.getUsers().then(function(users) {
-
-				var obj = {
-					username: req.user.username,
-					groupname: groupname,
-					groupmembers: [],
-					completed: group.dataValues.completed,
-					part: group.dataValues.part
-				}
-
-				// Go through all the users and add usernames
-	    	for (var i in users) {
-	    		// Add all usernames to group
-	    		obj.groupmembers.push(users[i].dataValues.username)
-	    	}
-
-	    	// Emit the newest user
-	    	io.sockets.emit(groupname + 'new user', req.user.username);
-
-				// Send group name and group members
-				res.render('sketch', obj);
-
-			}).error(function(err) {
-		    console.log(err);
-		  })
-
-		}).error(function(err) {
-	    console.log(err);
-	  })
-		
+	router.get('/sketch/:groupname', isLoggedIn, sketch, function(req, res) {
+		// Emit the newest user
+  	io.sockets.emit(req.params.groupname + 'new user', req.user.username);
 	});
 
 	// AJAX request for story
-	router.post('/sketch/:groupname/story', isLoggedIn, function(req, res) {
-
-		var completed = req.body.completed;
-
-		models.Story.findOne({
-  		where: {storyID: completed+1}
-  	}).then(function(stories) {
-
-  		var obj = {
-				caption1: stories.dataValues.caption1,
-				caption2: stories.dataValues.caption2,
-				caption3: stories.dataValues.caption3,
-				caption4: stories.dataValues.caption4,
-			}
-
-			// Send group name and group members
-			res.json(obj);
-
-  	}).error(function(err) {
-	    console.log(err);
-	  })
-		
-	});
+	router.post('/sketch/:groupname/story', isLoggedIn, story);
 
 	// =====================================
 	// LOGOUT ==============================
