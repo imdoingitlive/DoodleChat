@@ -16,8 +16,6 @@ $(document).on("click", "#find-submit", function() {
 	// AJAX post the group name 
 	$.post(baseURL + "/findgroup", obj, function(res) {
 
-		console.log(res)
-
 		// Remove previous messages and serach groups
 		$('.message').remove();
 		$('#search-group').remove();

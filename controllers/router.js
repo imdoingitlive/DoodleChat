@@ -155,6 +155,7 @@ var returnRouter = function(io) {
 	  	// Check if user is in group
 	    group.getUsers({where : {username: req.user.username}}).then(function(results) {
 
+	    	// Create obj to send back to client
 	    	var obj = {
 	    		groupname: group.dataValues.groupname,
 	    		totalusers: group.dataValues.totalusers
@@ -190,32 +191,41 @@ var returnRouter = function(io) {
 		    where: {groupname: req.body.groupname}
 		  }).then(function(group) {
 
+		  	// Check if total users is 4
+		  	var totalusers = group.dataValues.totalusers;
+
+		  	if (totalusers === 4) {
+		  		res.json({message: 'Unable to join.  Group max reached.'});
+		  		return
+		  	}		  		
+
 		  	// Increment the totalusers by one
-				var totalusers = group.dataValues.totalusers;
-				return group.updateAttributes({
+				group.updateAttributes({
 					totalusers: totalusers+1
-				})
+				}).then(function(group) {
 
-			}).then(function(group) {
+					// Associate user with group
+					group.addUser(user).then(function() {
 
-				// Associate user with group
-				group.addUser(user).then(function() {
+						// Send group name
+						res.json({group: group.dataValues.groupname});
 
-					// Send group name
-					res.json({group: group.dataValues.groupname});
+					}).error(function(err) {
+				    console.log(err);
+				  })
 
 				}).error(function(err) {
 			    console.log(err);
-			  })
+				})
 
 			}).error(function(err) {
 		    console.log(err);
-		  })
+			})
 
 		}).error(function(err) {
 	    console.log(err);
-	  })
-		
+		})
+
 	});
 
 	// When hitting create group button
