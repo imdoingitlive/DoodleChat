@@ -79,16 +79,30 @@ var returnRouter = function(io) {
 		models.Group.findAll({
 			limit: 5,
 			order: 'created_at DESC'
-		}).then(function(recentGroups){
-			// Add recent groups
-			for (var i in recentGroups) {
-				var obj = {
-					groupname: recentGroups[i].dataValues.groupname,
-					totalusers: recentGroups[i].dataValues.totalusers
-				}
-				hbsObject.recentGroups.push(obj);
-			}
-			return
+			// Create a loop through function that is called recursively
+		}).then(function loopThrough(recentGroups, counter) {
+
+				// Set counter
+				if (counter === undefined) counter = 0;
+				if (counter >= recentGroups.length) return;
+				// Check if user is in group
+	    	recentGroups[counter].getUsers({where : {username: req.user.username}}).then(function(results) {
+	    		var obj = {
+						groupname: recentGroups[counter].dataValues.groupname,
+						totalusers: recentGroups[counter].dataValues.totalusers
+					}
+	    		// If no result, not used yet
+		    	if (results.length === 0)
+		    		obj.joined = false;
+		    	else
+		    		obj.joined = true;
+		    	// Push obj to recent groups
+		    	hbsObject.recentGroups.push(obj);
+		    	// Recursion
+		    	counter++;
+		    	loopThrough(recentGroups, counter)
+	    	})
+
 		}).then(function() {
 			// Get sequelize user object
 			models.User.findOne({
@@ -138,30 +152,29 @@ var returnRouter = function(io) {
 	    	return
 	    }
 
-	    // Check if user is in group
-	    group.getUsers().then(function(results) {
+	  	// Check if user is in group
+	    group.getUsers({where : {username: req.user.username}}).then(function(results) {
+
 	    	var obj = {
 	    		groupname: group.dataValues.groupname,
 	    		totalusers: group.dataValues.totalusers
 	    	};
-	    	// Go through all the users to see if user is in group
-	    	for (var i in results) {
-	    		if (results[i].dataValues.username === req.user.username) {
-	    			obj.joined = true;
-	    		}
-	    	}
-	    	// If user is not in group add false object
-	    	if (!obj.joined) {
+	    	// If no result, not used yet
+	    	if (results.length === 0)
 	    		obj.joined = false;
-	    	}
+	    	else
+	    		obj.joined = true;
 	    	// Send groupname
 	  		res.json(obj);
-	    })
+
+	    }).error(function(err){
+		    console.log(err);
+		  });    
 
 	  }).error(function(err){
 	    console.log(err);
 	  });
-		
+
 	});
 
 	// When hitting join group button

@@ -39,6 +39,10 @@
           {{#each this.recentGroups}}
             <div>
               <p>{{this.groupname}} {{this.totalusers}}/4</p>
+              {{#if this.joined}}
+              {{else}}
+                <button class="btn btn-info join-submit" data-group="{{this.groupname}}" type="button">Join</button>
+              {{/if}}
             </div>
           {{/each}}
         </div>

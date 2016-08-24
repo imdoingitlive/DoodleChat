@@ -16,6 +16,8 @@ $(document).on("click", "#find-submit", function() {
 	// AJAX post the group name 
 	$.post(baseURL + "/findgroup", obj, function(res) {
 
+		console.log(res)
+
 		// Remove previous messages and serach groups
 		$('.message').remove();
 		$('#search-group').remove();
@@ -31,7 +33,7 @@ $(document).on("click", "#find-submit", function() {
 			var $div = $("<div>").attr("id","search-group").append($p);
 			// If not joined append join button
 			if (!res.joined) {
-				var $but = $("<button>").addClass("btn btn-info").attr("data-group",res.groupname).attr("type","button").attr("id","join-submit").text("Join");
+				var $but = $("<button>").addClass("btn btn-info join-submit").attr("data-group",res.groupname).attr("type","button").text("Join");
 				$div.append($but);
 			}
 			$('#wrapper-find-group').append($div);
@@ -43,16 +45,18 @@ $(document).on("click", "#find-submit", function() {
 });
 
 // Capture join group submit
-$(document).on("click", "#join-submit", function() {
+$(document).on("click", ".join-submit", function() {
 
 	// Get user input groupname
-	var groupname = $("#join-submit").attr("data-group");
+	var groupname = $(".join-submit").attr("data-group");
 	var obj = {
 		groupname: groupname
 	}
 
 	// AJAX post the group name 
 	$.post(baseURL + "/joingroup", obj, function(res) {
+
+		console.log(res)
 
 		// Remove previous messages and serach groups
 		$('.message').remove();
