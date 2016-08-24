@@ -81,27 +81,37 @@ var returnRouter = function(io) {
 			order: 'created_at DESC'
 			// Create a loop through function that is called recursively
 		}).then(function loopThrough(recentGroups, counter) {
-
 				// Set counter
 				if (counter === undefined) counter = 0;
 				if (counter >= recentGroups.length) return;
-				// Check if user is in group
-	    	recentGroups[counter].getUsers({where : {username: req.user.username}}).then(function(results) {
-	    		var obj = {
-						groupname: recentGroups[counter].dataValues.groupname,
-						totalusers: recentGroups[counter].dataValues.totalusers
-					}
-	    		// If no result, not used yet
-		    	if (results.length === 0)
-		    		obj.joined = false;
-		    	else
-		    		obj.joined = true;
-		    	// Push obj to recent groups
+				// Get groupname and totalusers
+				var obj = {
+					groupname: recentGroups[counter].dataValues.groupname,
+					totalusers: recentGroups[counter].dataValues.totalusers
+				}
+				// Check if total users is reached
+				if (obj.totalusers === 4) {
+		  		obj.joined = true;
+		  		// Push obj to recent groups
 		    	hbsObject.recentGroups.push(obj);
 		    	// Recursion
 		    	counter++;
 		    	loopThrough(recentGroups, counter)
-	    	})
+		  	} else {
+		  		// Check if user is in group
+		    	recentGroups[counter].getUsers({where : {username: req.user.username}}).then(function(results) {
+		    		// If no result, not used yet
+			    	if (results.length === 0)
+			    		obj.joined = false;
+			    	else
+			    		obj.joined = true;
+			    	// Push obj to recent groups
+			    	hbsObject.recentGroups.push(obj);
+			    	// Recursion
+			    	counter++;
+			    	loopThrough(recentGroups, counter)
+		    	})
+		  	}				
 
 		}).then(function() {
 			// Get sequelize user object
@@ -193,7 +203,6 @@ var returnRouter = function(io) {
 
 		  	// Check if total users is 4
 		  	var totalusers = group.dataValues.totalusers;
-
 		  	if (totalusers === 4) {
 		  		res.json({message: 'Unable to join.  Group max reached.'});
 		  		return
