@@ -4,10 +4,14 @@ Drawing app for the second group project of Rutgers Coding Bootcamp.
 ## Screenshots
 Include a one or two screenshots of main UI/UX points of your app and how it solves a problem
 
-### Create a Story
-
+### Login/Signup
 ```
-![Alt text](/readme_images/customer01.jpg?raw=true "BamazonCustomer.js")
+<login image here>
+```
+
+### Users
+```
+<user form image here>
 ```
 
 ## Technologies used
@@ -78,3 +82,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Hat tip to anyone who's code was used
 * Inspiration
 * etc
+
+
+
+> Written with [StackEdit](https://stackedit.io/).
