@@ -14,7 +14,7 @@
     <li class="active"><a><strong><i class="fa fa-users" aria-hidden="true"></i> Your Groups</strong></a></li>
     {{#each this.userGroups}}
       <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
-        <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go</button>
+        <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go <i class="fa fa-arrow-right" aria-hidden="true"></i></button>
       </a></li>
     {{/each}}  
 
@@ -62,8 +62,15 @@
   </ul>
 </nav>
 
-<div class="container">
-
+<div class="wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-md-4 col-lg-3" id="sun">
+        <p class="triangle-border"><strong>Please select a group to start sketching.</strong></p>
+        <img class="img-responsive" src="./assets/img/sun.jpg">
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Sketch JS -->

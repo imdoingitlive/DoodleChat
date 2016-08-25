@@ -3,6 +3,7 @@
 .nav-sidebar {
   position: absolute;
   width: 200px;
+  padding-top: 4px;
   padding-left: 4px;
   border-right: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
@@ -51,7 +52,56 @@
   margin: 4px;
 }
 
-/*------------------------*/
+/* Container */
+
+/* Offsets the container by the width of the sidebar */
+.wrapper {
+  margin-left: 200px;
+}
+
+#sun {
+  margin-top: 50px;
+}
+
+/* Speech bubble */
+
+.triangle-border {
+  position: relative;
+  padding: 15px;
+  border: 5px solid #1ca1da;
+  color: #333;
+  background: #fff;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+.triangle-border:before {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 40px;
+  border-width: 20px 20px 0;
+  border-style: solid;
+  border-color: #1ca1da transparent;
+  display: block;
+  width: 0;
+}
+
+.triangle-border:after {
+  content: "";
+  position: absolute;
+  bottom: -13px;
+  left: 47px;
+  border-width: 13px 13px 0;
+  border-style: solid;
+  border-color: #fff transparent;
+  display: block;
+  width: 0;
+}
+
+
+
 
 #logout {
   position: absolute;
