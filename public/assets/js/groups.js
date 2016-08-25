@@ -64,14 +64,14 @@ $(document).on("click", ".join-submit", function() {
 			$("#find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
 			// Force a reload after 3 secs
 			setTimeout(function() {
-				window.location = baseURL + "/groups";
+				window.location = baseURL + "/sketch";
 			}, 3000)
 		}
 
 		// Append group
 		if (res.group) {
 			// Force a reload
-			window.location = baseURL + "/groups";
+			window.location = baseURL + "/sketch";
 		}
 		
 	});
@@ -106,7 +106,7 @@ $(document).on("click", "#create-submit", function() {
 		// Append group
 		if (res.group) {
 			// Force a reload
-			window.location = baseURL + "/groups";
+			window.location = baseURL + "/sketch";
 		}
 		
 	});
@@ -124,7 +124,34 @@ $(document).on("click", ".sketch", function() {
 	$("#create-input").val('');
 
 	// Go to group sketch
-	window.location = baseURL + "/sketch/" + groupname;
+	// window.location = baseURL + "/group/" + groupname;
+
+	// AJAX get the sketch information 
+	$.getJSON(baseURL + "/group/" + groupname, function(data) {
+
+		console.log(data)
+
+		// Remove sun
+		$container = $('.container');
+		$container.empty();
+
+		// Add header
+		var text = ['Group','Completed','Part'];
+		var info = [data.groupname, data.completed, data.part];
+		var glyphicon = ['sunglasses', 'ok', 'th-large'];
+
+		// Create row
+		var $row = $('<div>').addClass('row').attr('id','header');
+		// Loop through and create cols
+		for (var i in text) {
+			var $h1 = $('<h1>').html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
+			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h1);
+			$row.append($col);
+		}
+		// Add row to container
+		$container.append($row);
+		
+	});
 
 	return false;
 });

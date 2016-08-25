@@ -7,7 +7,7 @@ module.exports = function(req, res, next) {
 		if (!user) return res.json(info);
 		req.logIn(user, function(err) {
 			if (err) return next(err);
-			return res.json({redirect: '/groups'});
+			return res.json({redirect: '/sketch'});
 		});
 	}) (req, res, next)
 }, function(req, res, next) {
