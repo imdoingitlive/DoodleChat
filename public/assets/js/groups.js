@@ -16,25 +16,24 @@ $(document).on("click", "#find-submit", function() {
 	// AJAX post the group name 
 	$.post(baseURL + "/findgroup", obj, function(res) {
 
-		// Remove previous messages and serach groups
-		$('.message').remove();
-		$('#search-group').remove();
+		// Remove previous messages and search groups
+		$("#find-group").empty();
+		$('#create-group').empty();
 
 		// Append message
 		if (res.message) {
-			$("#wrapper-find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
+			$("#find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
 		}
 
 		// Append group
 		if (res.groupname) {
-			var $p = $("<p>").text(res.groupname + " " + res.totalusers + "/4");
-			var $div = $("<div>").attr("id","search-group").append($p);
+			var $a = $("<a>").html('<span class="badge">' + res.totalusers + '/4</span> ' + res.groupname + ' ');
 			// If not joined append join button
 			if (!res.joined) {
 				var $but = $("<button>").addClass("btn btn-info join-submit").attr("data-group",res.groupname).attr("type","button").text("Join");
-				$div.append($but);
+				$a.append($but)
 			}
-			$('#wrapper-find-group').append($div);
+			$('#find-group').append($a);
 		}
 		
 	});
@@ -56,21 +55,22 @@ $(document).on("click", ".join-submit", function() {
 
 		console.log(res)
 
-		// Remove previous messages and serach groups
-		$('.message').remove();
-		$('#search-group').remove();
+		// Remove previous messages and search groups
+		$("#find-group").empty();
+		$('#create-group').empty();
 
 		// Append message
 		if (res.message) {
-			$("#wrapper-find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
+			$("#find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
+			// Force a reload after 3 secs
+			setTimeout(function() {
+				window.location = baseURL + "/groups";
+			}, 3000)
 		}
 
 		// Append group
 		if (res.group) {
-			// var $p = $("<p>").text(res.group);
-			// var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
-			// var $div = $("<div>").append($p).append($but)
-			// $('#your-groups').append($div);
+			// Force a reload
 			window.location = baseURL + "/groups";
 		}
 		
@@ -95,8 +95,8 @@ $(document).on("click", "#create-submit", function() {
 	$.post(baseURL + "/creategroup", obj, function(res) {
 
 		// Remove previous messages and serach groups
-		$('.message').remove();
-		$('#search-group').remove();
+		$("#find-group").empty();
+		$('#create-group').empty();
 
 		// Append message
 		if (res.message) {
@@ -105,10 +105,7 @@ $(document).on("click", "#create-submit", function() {
 
 		// Append group
 		if (res.group) {
-			// var $p = $("<p>").text(res.group);
-			// var $but = $("<button>").addClass("btn btn-info sketch").attr("data-group",res.group).attr("type","button").text("Go");
-			// var $div = $("<div>").append($p).append($but)
-			// $('#your-groups').append($div);
+			// Force a reload
 			window.location = baseURL + "/groups";
 		}
 		

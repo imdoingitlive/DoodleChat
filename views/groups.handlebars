@@ -1,71 +1,68 @@
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/assets/css/sketch.css" type="text/css" />
+
+<nav class="nav-sidebar">
+  <ul class="nav">
+
+    <!-- Login Information -->
+    <li class="active"><a>Signed in as: <strong>{{this.username}}</strong></a></li>
+    <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Sign out</a></li>
+
+    <li class="nav-divider"></li>
+  
+    <!-- Your Groups -->
+    <li class="active"><a><strong><i class="fa fa-users" aria-hidden="true"></i> Your Groups</strong></a></li>
+    {{#each this.userGroups}}
+      <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
+        <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go</button>
+      </a></li>
+    {{/each}}  
+
+    <li class="nav-divider"></li>
+    
+    <!-- Recent Groups -->
+    <li class="active"><a><strong><i class="fa fa-eye" aria-hidden="true"></i> Recent Groups</strong></a></li>
+    {{#each this.recentGroups}}
+      <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
+        {{#if this.joined}}
+        {{else}}
+          <button class="btn btn-info join-submit" data-group="{{this.groupname}}" type="button">Join</button>
+        {{/if}}
+      </a></li>
+    {{/each}}      
+
+    <li class="nav-divider"></li>
+    
+    <!-- Find a Group -->
+    <li class="active"><a><strong><i class="fa fa-search" aria-hidden="true"></i> Find a Group</strong></a></li>
+
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Group name..." id="find-input">
+      <span class="input-group-btn">
+        <button class="btn btn-info" type="button" id="find-submit">Find</button>
+      </span>
+    </div>
+
+    <li id="find-group"></li>
+
+    <li class="nav-divider"></li>
+    
+    <!-- Create a Group -->
+    <li class="active"><a><strong><i class="fa fa-plus" aria-hidden="true"></i> Create a Group</strong></a></li>
+
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Group name..." id="create-input">
+      <span class="input-group-btn">
+        <button class="btn btn-info" type="button" id="create-submit">Create</button>
+      </span>
+    </div>
+
+    <li id="create-group"></li>
+
+  </ul>
+</nav>
+
 <div class="container">
-
-  <div class="page-header text-center">
-    <h1>Group</h1>
-    <h2>Logged in as: {{this.username}}</h2>
-    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
-  </div>
-
-  <div class="row">
-
-    <div class="col-sm-4">
-      <div class="well" id="your-groups">
-        <h3>Your Groups</h3>
-        {{#each this.userGroups}}
-          <div>
-            <p>{{this.groupname}} {{this.totalusers}}/4</p>
-            <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go</button>
-          </div>
-        {{/each}}
-      </div>
-    </div>
-
-    <div class="col-sm-4">
-      <div class="well" id="find-group">
-        
-        <div id="wrapper-find-group">
-          <h3>Find a Group</h3>
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Group name..." id="find-input">
-            <span class="input-group-btn">
-              <button class="btn btn-info" type="button" id="find-submit">Find</button>
-            </span>
-          </div>
-          <br>
-        </div>
-
-        <div id="wrapper-recently-created">
-          <h3>Most Recently Created Groups</h3>
-          {{#each this.recentGroups}}
-            <div>
-              <p>{{this.groupname}} {{this.totalusers}}/4</p>
-              {{#if this.joined}}
-              {{else}}
-                <button class="btn btn-info join-submit" data-group="{{this.groupname}}" type="button">Join</button>
-              {{/if}}
-            </div>
-          {{/each}}
-        </div>
-
-      </div>
-    </div>
-
-    <div class="col-sm-4">
-      <div class="well" id="create-group">
-
-        <h3>Create a Group</h3>
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Group name..." id="create-input">
-          <span class="input-group-btn">
-            <button class="btn btn-info" type="button" id="create-submit">Create</button>
-          </span>
-        </div>
-        <br>
-
-      </div>
-    </div>
-
-  </div>
 
 </div>
 
