@@ -12,7 +12,7 @@ module.exports = function() {
 	    username: 'user1',
 	    password: bcrypt.hashSync('test', null, null) // use the generateHash function in our user model
 	  }).then(function(user1) {
-	  	return group.addGroup(user1)
+	  	return group.addUser(user1)
 	  })
 
 	  .then(function() {

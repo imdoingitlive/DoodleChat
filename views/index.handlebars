@@ -1,45 +1,48 @@
-<div class="container">
-  <div class="text-center">
-    <h1 class="storyboard">Storyboard</h1>
-  </div>
-</div>
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/assets/css/index.css" type="text/css" />
 
 <div class="container">
 
-  <div class="jumbotron text-center">
-    <h1><span class="fa fa-lock"></span> Node Authentication</h1>
-  </div>
+  <div class="row vertical-center">
 
-  <div class="col-sm-6 col-sm-offset-3" id="wrapper">
-    <h1><span class="fa fa-sign-in"></span> Login or Register with:</h1>
+    <div class="col-md-5 col-md-offset-2">
+      <h1 class="blue">Storyboard</h1>
+      <h2 class="orange">The telephone game of drawing. Create doodle masterpieces with your friends.</h2>
+    </div>
 
-    <!-- show any messages that come back with authentication -->
-    <div id="message"></div>
+    <div class="col-sm-3" id="wrapper">
+      <h4><span class="fa fa-sign-in"></span> Login or Register with:</h4>
 
-    <!-- LOGIN FORM -->
-    <form id="credentials">
+      <!-- show any messages that come back with authentication -->
+      <div id="message"></div>
 
-      <div class="form-group">
+      <!-- LOGIN FORM -->
+      <form id="credentials">
+
+        <div class="form-group">
           <label>Username</label>
           <input type="text" class="form-control" name="username">
-      </div>
+        </div>
 
-      <div class="form-group">
+        <div class="form-group">
           <label>Password</label>
           <input type="password" class="form-control" name="password">
-      </div>
-      
-      <div class="form-group">
-          <label>Remember Me</label>
-          <input type="checkbox" class="form-control" name="remember" value="yes">
-      </div>
+        </div>
+        
+        <label class="checkbox-inline">
+          <input type="checkbox" name="remember" value="yes">Remember Me
+        </label>
 
-			<button type="submit" class="btn btn-warning btn-lg" id="login">Login</button>
-      <button type="submit" class="btn btn-warning btn-lg" id="signup">Signup</button>
+        <div class="group">
+    			<button type="submit" class="btn btn-warning btn-lg" id="login">Login</button>
+          <button type="submit" class="btn btn-warning btn-lg" id="signup">Signup</button>
+        </div>
 
-    </form>
+      </form>
+    </div>
 
   </div>
+
 </div>
 
 <!-- Index JS -->
