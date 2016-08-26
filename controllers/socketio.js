@@ -51,7 +51,7 @@ var returnSocket = function(io) {
 			// Increment part
 			models.Group.findOne({
 				where: {
-					groupname: obj.groupname
+					groupname: groupname
 				}
 			}).then(function(group) {
 
@@ -66,8 +66,10 @@ var returnSocket = function(io) {
 						part: 1
 					}).then(function() {
 
-						// Force group to reload
-						io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+						// Tells group to move to next story
+						io.sockets.emit(groupname + 'next', {
+							completed: completed + 1
+						}); // io.sockets goes to all
 
 					}).error(function(err) {
 						console.log(err);
@@ -78,8 +80,10 @@ var returnSocket = function(io) {
 						part: part + 1
 					}).then(function() {
 
-						// Force group to reload
-						io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+						// Tells group to move to next part
+						io.sockets.emit(groupname + 'next', {
+							part: part + 1
+						}); // io.sockets goes to all
 
 					}).error(function(err) {
 						console.log(err);

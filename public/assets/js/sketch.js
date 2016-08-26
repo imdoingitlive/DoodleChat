@@ -72,14 +72,14 @@ $(document).on("click", ".join-submit", function() {
 			$("#find-group").append('<div class="alert alert-danger message">' + res.message + '</div>');
 			// Force a reload after 3 secs
 			setTimeout(function() {
-				window.location = baseURL + "/sketch";
+				location.reload();
 			}, 3000)
 		}
 
 		// If successfully added reload
 		if (res.success) {
 			// Force a reload
-			window.location = baseURL + "/sketch";
+			location.reload();
 		}
 		
 	});
@@ -116,7 +116,7 @@ $(document).on("click", "#create-submit", function() {
 		// Append group
 		if (res.group) {
 			// Force a reload
-			window.location = baseURL + "/sketch";
+			location.reload();
 		}
 		
 	});
@@ -135,13 +135,18 @@ $(document).on("click", ".sketch", function() {
 	// Empty input
 	$("#create-input").val('');
 
-	// Go to group sketch
-	// window.location = baseURL + "/group/" + groupname;
-
 	// AJAX get the sketch information 
 	$.getJSON(baseURL + "/group/" + groupname, function(data) {
 
 		console.log(data)
+
+		// Set local storage for being used when sending
+		localStorage.setItem('groupname', data.groupname);
+		localStorage.setItem('storyID', String(data.completed+1));
+		localStorage.setItem('part', String(data.part));
+
+		// Start socketIO
+	  socketIO(data);
 
 		// Remove sun
 		$container = $('.container');
@@ -150,7 +155,7 @@ $(document).on("click", ".sketch", function() {
 		// Remove previous group members
 		$('.group-members').remove();
 
-		// Add header
+		// Create header
 		var text = ['Group','Completed','Part'];
 		var info = [data.groupname, data.completed, data.part];
 		var glyphicon = ['sunglasses', 'ok', 'th-large'];
@@ -162,17 +167,17 @@ $(document).on("click", ".sketch", function() {
 			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h1);
 			$row.append($col);
 		}
-		// Add row to container
+		// Add header to container
 		$container.append($row);
 
-		// Add group members
+		// Create group members
 		var $nav = $('.nav');
 		// Add divider
 		var $divider = $('<li>').addClass('nav-divider group-members');
 		$nav.append($divider);
 		var $a = $('<a>').html('<strong>Group Members</strong>');
 		var $heading = $('<li>').addClass('active group-members').append($a);
-		// Add header
+		// Add group members header to side bar
 		$nav.append($heading);
 		// Add group members to ul
 		for (var i in data.groupmembers) {
@@ -198,14 +203,6 @@ $(document).on("click", ".sketch", function() {
 // =====================================
 function getPage(data) {
 
-	// Compute storyID currently on from completed
-	var storyID = data.completed + 1;
-
-	// Set local storage for being used when sending
-	localStorage.setItem('groupname', data.groupname);
-	localStorage.setItem('storyID', String(storyID));
-	localStorage.setItem('part', String(data.part));
-
 	// Save completed and part
 	var completedObj = {
 	  completed: data.completed
@@ -215,6 +212,12 @@ function getPage(data) {
 	$.post(baseURL + "/group/" + data.groupname +"/story", completedObj, function(res) {
 
 	  console.log(res)
+
+	  // Set local storage for captions
+		localStorage.setItem('caption1', res.caption1);
+		localStorage.setItem('caption2', res.caption2);
+		localStorage.setItem('caption3', res.caption3);
+		localStorage.setItem('caption4', res.caption4);
 
 	  // Switch statement for caption
 	  var caption;
@@ -231,15 +234,12 @@ function getPage(data) {
 	      part: data.part,
 	      caption: caption,
 	      groupnameEncoded: encodeURIComponent(data.groupname),
-	      storyID: storyID
+	      storyID: data.completed + 1
 	    }
 	    addCanvas(obj);
 	  }    
 	  else
 	    addWaiting(data.part);
-
-	  // Start socketIO
-	  socketIO(data)
 	  
 	});
 }
@@ -289,7 +289,9 @@ function addCanvas(obj) {
 // Add waiting instead of canvas =======
 // =====================================
 function addWaiting(part) {
-  $('.container').append('<h1>Waiting for group member to finish part ' + part + ' sketch</h1>');
+	var $h1 = $('<h1>').text('Waiting for group member to finish part ' + part + ' sketch');
+	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
+  $('.container').append($canvasWrapper);
 }
 
 // =====================================
@@ -318,9 +320,40 @@ function socketIO(data) {
 	  }	  	
 	});
 
-	// Listen for reload
-	socket.on(groupname + 'reload', function() {
-	  location.reload()
+	// Listen for signal for next part or story
+	socket.on(data.groupname + 'next', function(res) {
+
+	  console.log(res)
+
+	  // Empty canvas-wrapper
+	  $('#canvas-wrapper').empty();
+
+	  if (res.part) {
+
+		  // Switch statement for caption
+		  var caption;
+		  switch (res.part) {
+		  	// Get caption from local storage
+		    case 1: caption = localStorage.getItem('caption1'); break;
+		    case 2: caption = localStorage.getItem('caption2'); break;
+		    case 3: caption = localStorage.getItem('caption3'); break;
+		    case 4: caption = localStorage.getItem('caption4'); break;
+		  }
+
+		  // Check if canvas should be shown by comparing part number to array
+		  if (data.username === data.groupmembers[res.part-1]) {
+		    var obj = {
+		      part: res.part,
+		      caption: caption,
+		      groupnameEncoded: encodeURIComponent(data.groupname),
+		      storyID: data.completed + 1
+		    }
+		    addCanvas(obj);
+		  }    
+		  else
+		    addWaiting(res.part);
+	  }
+
 	});
 
 }
