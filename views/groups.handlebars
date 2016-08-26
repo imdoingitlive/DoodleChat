@@ -1,81 +1,27 @@
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/assets/css/sketch.css" type="text/css" />
 
-<nav class="nav-sidebar vertical-center">
-  <ul class="nav">
+<div class="container">
 
-    <!-- Login Information -->
-    <li class="active"><a>Signed in as: <strong>{{this.username}}</strong></a></li>
-    <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Sign out</a></li>
-
-    <li class="nav-divider"></li>
-  
-    <!-- Your Groups -->
-    <li class="active"><a><strong><i class="fa fa-users" aria-hidden="true"></i> Your Groups</strong></a></li>
-    {{#each this.userGroups}}
-      <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
-        <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go <i class="fa fa-arrow-right" aria-hidden="true"></i></button>
-      </a></li>
-    {{/each}}  
-
-    <li class="nav-divider"></li>
-    
-    <!-- Recent Groups -->
-    <li class="active"><a><strong><i class="fa fa-eye" aria-hidden="true"></i> Recent Groups</strong></a></li>
-    {{#each this.recentGroups}}
-      <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
-        {{#if this.joined}}
-        {{else}}
-          <button class="btn btn-info join-submit" data-group="{{this.groupname}}" type="button">Join</button>
-        {{/if}}
-      </a></li>
-    {{/each}}      
-
-    <li class="nav-divider"></li>
-    
-    <!-- Find a Group -->
-    <li class="active"><a><strong><i class="fa fa-search" aria-hidden="true"></i> Find a Group</strong></a></li>
-
-    <div class="input-group">
-      <input type="text" class="form-control" placeholder="Group name..." id="find-input">
-      <span class="input-group-btn">
-        <button class="btn btn-info" type="button" id="find-submit">Find</button>
-      </span>
+	<div class="page-header text-center">
+    <h1 id="group-name" data-groupname="{{this.groupname}}">Sketch Group: {{this.groupname}}</h1>
+    <h2 id="completed" data-completed="{{this.completed}}"><i class="fa fa-line-chart" aria-hidden="true"></i> Completed: {{this.completed}}</h2>
+    <h2 id="part" data-part="{{this.part}}">Part: {{this.part}}/4</h2>
+    <h2 id="user-name" data-username="{{this.username}}">Logged in as: {{this.username}}</h2>
+    <div class="well">
+      <h3>Group members</h3>
+      <div id="group-members">
+	      {{#each this.groupmembers}}
+	        <p>{{this}}</p>	
+	      {{/each}}
+	    </div>
     </div>
-
-    <li id="find-group"></li>
-
-    <li class="nav-divider"></li>
-    
-    <!-- Create a Group -->
-    <li class="active"><a><strong><i class="fa fa-plus" aria-hidden="true"></i> Create a Group</strong></a></li>
-
-    <div class="input-group">
-      <input type="text" class="form-control" placeholder="Group name..." id="create-input">
-      <span class="input-group-btn">
-        <button class="btn btn-info" type="button" id="create-submit">Create</button>
-      </span>
-    </div>
-
-    <li id="create-group"></li>
-
-  </ul>
-</nav>
-
-<div class="wrapper">
-  <div class="container">
-
-    <div class="row">
-      <div class="col-sm-6 col-md-4 col-lg-3" id="sun">
-        <p class="triangle-border"><strong>Please select a group to start sketching.</strong></p>
-        <img class="img-responsive" src="./assets/img/sun.jpg">
-      </div>
-    </div>
-
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
   </div>
+
 </div>
 
-
-
+<!-- Socket IO -->
+<script src="/socket.io/socket.io.js"></script>
 <!-- Sketch JS -->
-<script src="./assets/js/groups.js"></script>
+<script src="../assets/js/sketch.js"></script>

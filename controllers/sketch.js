@@ -1,6 +1,6 @@
 var models  = require('../models');
 
-module.exports = function(req, res, next) {
+module.exports = function(req, res) {
 
 	var groupname = req.params.groupname;
 
@@ -28,8 +28,6 @@ module.exports = function(req, res, next) {
 
     	// Send group name and group members
 			res.json(obj);
-
-    	return next()
 
 		}).error(function(err) {
 	    console.log(err);

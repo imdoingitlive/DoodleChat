@@ -52,7 +52,10 @@ var returnRouter = function(io) {
 	router.post('/findgroup', isLoggedIn, findgroup);
 
 	// When hitting join group button
-	router.post('/joingroup', isLoggedIn, joingroup);
+	router.post('/joingroup', isLoggedIn, joingroup, function(req, res) {
+		// Emit the newest user
+  	io.sockets.emit(req.body.groupname + 'new user', req.user.username);
+	});
 
 	// When hitting create group button
 	router.post('/creategroup', isLoggedIn, creategroup);
@@ -63,11 +66,8 @@ var returnRouter = function(io) {
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this (the isLoggedIn function)
 
-	// When going to main sketch page
-	router.get('/group/:groupname', isLoggedIn, sketch, function(req, res) {
-		// Emit the newest user
-  	io.sockets.emit(req.params.groupname + 'new user', req.user.username);
-	});
+	// AJAX request for when go is clicked
+	router.get('/group/:groupname', isLoggedIn, sketch);
 
 	// AJAX request for story
 	router.post('/group/:groupname/story', isLoggedIn, story);

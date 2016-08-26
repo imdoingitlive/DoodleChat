@@ -4,10 +4,6 @@ module.exports = function(req, res) {
 
 	var completed = req.body.completed;
 
-	console.log('------------------------------------')
-	console.log(completed)
-	console.log('------------------------------------')
-
 	models.Story.findOne({
 		where: {storyID: completed+1}
 	}).then(function(stories) {
