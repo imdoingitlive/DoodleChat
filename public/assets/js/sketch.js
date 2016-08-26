@@ -326,9 +326,12 @@ function socketIO(data) {
 	  console.log(res)
 
 	  // Empty canvas-wrapper
-	  $('#canvas-wrapper').empty();
+	  $('#canvas-wrapper').remove();
 
 	  if (res.part) {
+
+	  	// Set part to new part
+	  	localStorage.setItem('part', String(res.part));
 
 		  // Switch statement for caption
 		  var caption;

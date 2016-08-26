@@ -45,54 +45,56 @@ var returnSocket = function(io) {
 					console.log('Error uploading data: ', data);
 				} else {
 					console.log('Succesfully uploaded the image!');
-				}
-			})
 
-			// Increment part
-			models.Group.findOne({
-				where: {
-					groupname: groupname
-				}
-			}).then(function(group) {
+					// Increment part
+					models.Group.findOne({
+						where: {
+							groupname: groupname
+						}
+					}).then(function(group) {
 
-				// Check if part is 4
-				var completed = group.dataValues.completed;
-				var part = group.dataValues.part;
+						// Check if part is 4
+						var completed = group.dataValues.completed;
+						var part = group.dataValues.part;
 
-				if (part === 4) {
-					// Increment completed by one and reset part
-					group.updateAttributes({
-						completed: completed + 1,
-						part: 1
-					}).then(function() {
+						if (part === 4) {
+							// Increment completed by one and reset part
+							group.updateAttributes({
+								completed: completed + 1,
+								part: 1
+							}).then(function() {
 
-						// Tells group to move to next story
-						io.sockets.emit(groupname + 'next', {
-							completed: completed + 1
-						}); // io.sockets goes to all
+								// Tells group to move to next story
+								io.sockets.emit(groupname + 'next', {
+									completed: completed + 1
+								}); // io.sockets goes to all
+
+							}).error(function(err) {
+								console.log(err);
+							})
+						} else {
+							// Increment the part by one
+							group.updateAttributes({
+								part: part + 1
+							}).then(function() {
+
+								// Tells group to move to next part
+								io.sockets.emit(groupname + 'next', {
+									part: part + 1
+								}); // io.sockets goes to all
+
+							}).error(function(err) {
+								console.log(err);
+							})
+						}				
 
 					}).error(function(err) {
 						console.log(err);
 					})
-				} else {
-					// Increment the part by one
-					group.updateAttributes({
-						part: part + 1
-					}).then(function() {
-
-						// Tells group to move to next part
-						io.sockets.emit(groupname + 'next', {
-							part: part + 1
-						}); // io.sockets goes to all
-
-					}).error(function(err) {
-						console.log(err);
-					})
-				}				
-
-			}).error(function(err) {
-				console.log(err);
+					
+				}
 			})
+
 		})
 
 	});
