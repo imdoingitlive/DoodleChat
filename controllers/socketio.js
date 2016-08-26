@@ -58,16 +58,33 @@ var returnSocket = function(io) {
 						var part = group.dataValues.part;
 
 						if (part === 4) {
+							
 							// Increment completed by one and reset part
 							group.updateAttributes({
 								completed: completed + 1,
 								part: 1
 							}).then(function() {
 
-								// Tells group to move to next story
-								io.sockets.emit(groupname + 'next', {
-									completed: completed + 1
-								}); // io.sockets goes to all
+								// Save new story ID
+								var newStoryID = completed + 2;
+								// Find the next captions
+								models.Story.findOne({
+									where: {storyID: newStoryID}
+								}).then(function(stories) {
+
+									// Tells group to move to next story
+									io.sockets.emit(groupname + 'next story', {
+										storyID: newStoryID,
+										part: 1,
+										caption1: stories.dataValues.caption1,
+										caption2: stories.dataValues.caption2,
+										caption3: stories.dataValues.caption3,
+										caption4: stories.dataValues.caption4,
+									}); // io.sockets goes to all
+
+								}).error(function(err) {
+							    console.log(err);
+							  })
 
 							}).error(function(err) {
 								console.log(err);
@@ -79,7 +96,8 @@ var returnSocket = function(io) {
 							}).then(function() {
 
 								// Tells group to move to next part
-								io.sockets.emit(groupname + 'next', {
+								io.sockets.emit(groupname + 'next part', {
+									// storyID: completed + 1,
 									part: part + 1
 								}); // io.sockets goes to all
 
@@ -91,7 +109,7 @@ var returnSocket = function(io) {
 					}).error(function(err) {
 						console.log(err);
 					})
-					
+
 				}
 			})
 

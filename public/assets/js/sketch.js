@@ -203,7 +203,7 @@ $(document).on("click", ".sketch", function() {
 // =====================================
 function getPage(data) {
 
-	// Save completed and part
+	// Make completed obj to send
 	var completedObj = {
 	  completed: data.completed
 	};
@@ -281,8 +281,9 @@ function addCanvas(obj) {
   // Add tools and canvas to wrapper
   var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($tools).append($canvasHolder);
   $('.container').append($canvasWrapper);
-  // Start the sketching
+  // Start the sketching (once the first time)
   $('#colors_sketch').sketch();
+
 };
 
 // =====================================
@@ -320,42 +321,78 @@ function socketIO(data) {
 	  }	  	
 	});
 
-	// Listen for signal for next part or story
-	socket.on(data.groupname + 'next', function(res) {
+	// Listen for signal for next part
+	socket.on(data.groupname + 'next part', function(res) {
 
 	  console.log(res)
 
 	  // Empty canvas-wrapper
 	  $('#canvas-wrapper').remove();
 
-	  if (res.part) {
+  	// Set storyID (as a safety) and part to new part
+  	// localStorage.setItem('part', String(res.storyID));
+  	localStorage.setItem('part', String(res.part));
 
-	  	// Set part to new part
-	  	localStorage.setItem('part', String(res.part));
-
-		  // Switch statement for caption
-		  var caption;
-		  switch (res.part) {
-		  	// Get caption from local storage
-		    case 1: caption = localStorage.getItem('caption1'); break;
-		    case 2: caption = localStorage.getItem('caption2'); break;
-		    case 3: caption = localStorage.getItem('caption3'); break;
-		    case 4: caption = localStorage.getItem('caption4'); break;
-		  }
-
-		  // Check if canvas should be shown by comparing part number to array
-		  if (data.username === data.groupmembers[res.part-1]) {
-		    var obj = {
-		      part: res.part,
-		      caption: caption,
-		      groupnameEncoded: encodeURIComponent(data.groupname),
-		      storyID: data.completed + 1
-		    }
-		    addCanvas(obj);
-		  }    
-		  else
-		    addWaiting(res.part);
+	  // Switch statement for caption
+	  var caption;
+	  switch (res.part) {
+	  	// Get caption from local storage
+	    case 1: caption = localStorage.getItem('caption1'); break;
+	    case 2: caption = localStorage.getItem('caption2'); break;
+	    case 3: caption = localStorage.getItem('caption3'); break;
+	    case 4: caption = localStorage.getItem('caption4'); break;
 	  }
+
+	  // Check if canvas should be shown by comparing part number to array
+	  if (data.username === data.groupmembers[res.part-1]) {
+	    var obj = {
+	      part: res.part,
+	      caption: caption,
+	      groupnameEncoded: encodeURIComponent(data.groupname),
+	      storyID: Number(localStorage.getItem('storyID'))
+	    }
+	    addCanvas(obj);
+	  }    
+	  else
+	    addWaiting(res.part);
+
+	});
+
+	// Listen for signal for next part or story
+	socket.on(data.groupname + 'next story', function(res) {
+
+	  console.log(res)
+
+	  // Stop listeners from being added again
+	  listeners = false;
+
+	  // Empty canvas-wrapper
+	  $('#canvas-wrapper').remove();
+
+  	// Set local storage for storyID to new storyID and part to 1
+  	localStorage.setItem('storyID', String(res.storyID));
+  	localStorage.setItem('part', '1');
+  	// Set local storage for captions
+		localStorage.setItem('caption1', res.caption1);
+		localStorage.setItem('caption2', res.caption2);
+		localStorage.setItem('caption3', res.caption3);
+		localStorage.setItem('caption4', res.caption4);
+
+		// Get caption
+	  var caption = res.caption1
+
+	  // Check if canvas should be shown by comparing part number to array
+	  if (data.username === data.groupmembers[data.part-1]) {
+	    var obj = {
+	      part: data.part,
+	      caption: caption,
+	      groupnameEncoded: encodeURIComponent(data.groupname),
+	      storyID: res.storyID
+	    }
+	    addCanvas(obj);
+	  }    
+	  else
+	    addWaiting(res.part);
 
 	});
 
@@ -364,6 +401,9 @@ function socketIO(data) {
 // =====================================
 // Sketch.js ===========================
 // =====================================
+
+var listeners = true;
+
 var __slice = Array.prototype.slice;
 var Sketch;
 (function($) {
@@ -411,7 +451,8 @@ var Sketch;
       this.actions = [];
       this.action = [];
       this.canvas.bind('click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', this.onEvent);
-      if (this.options.toolLinks) {
+      // Only run on first story
+      if (this.options.toolLinks && listeners === true) {
         $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
           var $canvas, $this, key, sketch, _i, _len, _ref;
           $this = $(this);
@@ -429,7 +470,7 @@ var Sketch;
           }
           // Custom listener for sending
           if ($(this).attr('data-send')) {
-            // Save gropuname, storyID, and part for img URL
+            // Save groupname, storyID, and part for img URL
             var obj = {
               groupname: localStorage.getItem('groupname'),
               storyID: localStorage.getItem('storyID'),
