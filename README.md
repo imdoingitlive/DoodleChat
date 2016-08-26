@@ -6,7 +6,7 @@ Include a one or two screenshots of main UI/UX points of your app and how it sol
 
 ### Login/Signup
 ```
-![alt text](https://github.com/imdoingitlive/Storyboard/readme_images/login_signup.png?raw=true "Storyboard")
+![login_signup](https://cloud.githubusercontent.com/assets/18490932/18021693/3030a8aa-6bb7-11e6-9418-c96131cdff38.png)
 ```
 
 ## Technologies used
