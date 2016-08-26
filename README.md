@@ -4,17 +4,16 @@ Drawing app for the second group project of Rutgers Coding Bootcamp.
 ## Screenshots
 Include a one or two screenshots of main UI/UX points of your app and how it solves a problem
 
+### Login/Signup
 ```
-### Create a Story
-
-![Alt text](/readme_images/customer01.jpg?raw=true "BamazonCustomer.js")
+![alt text](https://github.com/imdoingitlive/Storyboard/readme_images/login_signup.png?raw=true "Storyboard")
 ```
 
 ## Technologies used
 You can give a brief listing of the technologies you've learned and applied here
 - node.js
 - Express
-- Handblebars
+- Handlebars
 - MySql
 - Sequelize
 - socketio
@@ -29,8 +28,8 @@ What to install and how for local development and testing purposes
 
 ```
 - node.js: visit node.js and download...
-- mongodb: npm install -g mongodb
 - mysqldb: brew install mysql
+- Storyboard: npm i
 ```
 
 ## Running the tests
@@ -40,15 +39,12 @@ Explain how to run the automated tests for this system (if applicable)
 ```
 To Start the Server:
 
-node ./bin/www
-
+npm serve
 ```
 
 ## Built With
 
-* Atom - Sublime Text is pretty cool too I guess
-* Balsamiq - Wireframe of choice 
-* RoboMongo - Because .pretty() everything is tedious
+* Sublime Text
 
 ## Walk throughs of code
 For Project presentation, you can include snippets of code you found buggy, interesting, or are overall proud of here.  Try to limit the quantity and size to quick readable bits.
