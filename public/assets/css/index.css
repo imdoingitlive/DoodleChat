@@ -17,7 +17,7 @@ body {
   -moz-background-size: cover;
   background-size: cover;
   -o-background-size: cover;
-  font-family: 'Aclonica', sans-serif;
+  /*font-family: 'Aclonica', sans-serif;*/
 }
 
 #login, #signup {
@@ -39,11 +39,8 @@ body {
 }
 
 .blue {
-	color: #1ca1da;
-}
-
-.orange {
-	color: #f0ad4e;
+	color: #ffb300;
+  font-family: 'Aclonica', sans-serif;
 }
 
 .checkbox {
