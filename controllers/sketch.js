@@ -27,7 +27,6 @@ module.exports = function(req, res, next) {
     	}
 
     	// Send group name and group members
-			// res.render('sketch', obj);
 			res.json(obj);
 
     	return next()

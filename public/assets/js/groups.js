@@ -135,11 +135,13 @@ $(document).on("click", ".sketch", function() {
 		$container = $('.container');
 		$container.empty();
 
+		// Remove previous group members
+		$('.group-members').remove();
+
 		// Add header
 		var text = ['Group','Completed','Part'];
 		var info = [data.groupname, data.completed, data.part];
 		var glyphicon = ['sunglasses', 'ok', 'th-large'];
-
 		// Create row
 		var $row = $('<div>').addClass('row').attr('id','header');
 		// Loop through and create cols
@@ -150,6 +152,22 @@ $(document).on("click", ".sketch", function() {
 		}
 		// Add row to container
 		$container.append($row);
+
+		// Add group members
+		var $nav = $('.nav');
+		// Add divider
+		var $divider = $('<li>').addClass('nav-divider group-members');
+		$nav.append($divider);
+		var $a = $('<a>').html('<strong>Group Members</strong>');
+		var $heading = $('<li>').addClass('active group-members').append($a);
+		// Add header
+		$nav.append($heading);
+		// Add group members to ul
+		for (var i in data.groupmembers) {
+			var $a = $('<a>').text(data.groupmembers[i]);
+			var $li = $('<li>').addClass('group-members').append($a);
+			$nav.append($li);
+		}
 		
 	});
 
