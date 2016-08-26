@@ -1,15 +1,9 @@
 var models  = require('../models');
 
 module.exports = function(req, res) {
-
-	var completed = req.body.completed;
-
-	console.log('------------------------------------')
-	console.log(completed)
-	console.log('------------------------------------')
-
+	
 	models.Story.findOne({
-		where: {storyID: completed+1}
+		where: {storyID: Number(req.body.completed) + 1}
 	}).then(function(stories) {
 
 		var obj = {

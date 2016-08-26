@@ -45,50 +45,74 @@ var returnSocket = function(io) {
 					console.log('Error uploading data: ', data);
 				} else {
 					console.log('Succesfully uploaded the image!');
-				}
-			})
 
-			// Increment part
-			models.Group.findOne({
-				where: {
-					groupname: obj.groupname
-				}
-			}).then(function(group) {
+					// Increment part
+					models.Group.findOne({
+						where: {
+							groupname: groupname
+						}
+					}).then(function(group) {
 
-				// Check if part is 4
-				var completed = group.dataValues.completed;
-				var part = group.dataValues.part;
+						// Check if part is 4
+						var completed = group.dataValues.completed;
+						var part = group.dataValues.part;
 
-				if (part === 4) {
-					// Increment completed by one and reset part
-					group.updateAttributes({
-						completed: completed + 1,
-						part: 1
-					}).then(function() {
+						if (part === 4) {
+							
+							// Increment completed by one and reset part
+							group.updateAttributes({
+								completed: completed + 1,
+								part: 1
+							}).then(function() {
 
-						// Force group to reload
-						io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
+								// Save new story ID
+								var newStoryID = completed + 2;
+								// Find the next captions
+								models.Story.findOne({
+									where: {storyID: newStoryID}
+								}).then(function(stories) {
+
+									// Tells group to move to next story
+									io.sockets.emit(groupname + 'next story', {
+										storyID: newStoryID,
+										part: 1,
+										caption1: stories.dataValues.caption1,
+										caption2: stories.dataValues.caption2,
+										caption3: stories.dataValues.caption3,
+										caption4: stories.dataValues.caption4,
+									}); // io.sockets goes to all
+
+								}).error(function(err) {
+							    console.log(err);
+							  })
+
+							}).error(function(err) {
+								console.log(err);
+							})
+						} else {
+							// Increment the part by one
+							group.updateAttributes({
+								part: part + 1
+							}).then(function() {
+
+								// Tells group to move to next part
+								io.sockets.emit(groupname + 'next part', {
+									// storyID: completed + 1,
+									part: part + 1
+								}); // io.sockets goes to all
+
+							}).error(function(err) {
+								console.log(err);
+							})
+						}				
 
 					}).error(function(err) {
 						console.log(err);
 					})
-				} else {
-					// Increment the part by one
-					group.updateAttributes({
-						part: part + 1
-					}).then(function() {
 
-						// Force group to reload
-						io.sockets.emit(obj.groupname + 'reload'); // io.sockets goes to all
-
-					}).error(function(err) {
-						console.log(err);
-					})
-				}				
-
-			}).error(function(err) {
-				console.log(err);
+				}
 			})
+
 		})
 
 	});

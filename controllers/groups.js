@@ -70,7 +70,7 @@ module.exports = function(req, res) {
 					hbsObject.userGroups.push(obj);
 				}
 				// Render group page with groups
-	  		res.render('groups', hbsObject);
+	  		res.render('sketch', hbsObject);
 			}).error(function(err) {
 		    console.log(err);
 		  })

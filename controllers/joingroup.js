@@ -1,6 +1,6 @@
 var models  = require('../models');
 
-module.exports = function(req, res) {
+module.exports = function(req, res, next) {
 
 	// Get sequelize user object
 	models.User.findOne({
@@ -28,7 +28,9 @@ module.exports = function(req, res) {
 				group.addUser(user).then(function() {
 
 					// Send group name
-					res.json({group: group.dataValues.groupname});
+					res.json({success: true});
+					// Return next so io can be emitted
+					return next()
 
 				}).error(function(err) {
 			    console.log(err);
