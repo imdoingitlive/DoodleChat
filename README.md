@@ -10,12 +10,18 @@ Login/Signup | Sketch
 
 ## Technologies used
 You can give a brief listing of the technologies you've learned and applied here
-- node.js
-- Express
-- Handlebars
+- Node
+    - Express
+    - Handlebars
+    - Sequelize
+    - Socketio
+    - Cookie Parser
+    - Body Parser
+    - Favicon
+    - Logger
+    - Method Override
+    - Passport
 - MySql
-- Sequelize
-- socketio
 - Lucidchart
 
 ## Getting Started
@@ -45,6 +51,7 @@ npm serve
 ## Built With
 
 * Sublime Text
+* Node Package Manager
 * Heroku
 
 ## Walk throughs of code
