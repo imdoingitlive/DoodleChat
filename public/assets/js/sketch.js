@@ -140,6 +140,20 @@ $(document).on("click", ".sketch", function() {
 
 		console.log(data)
 
+		// Update your groups members count
+		var count = data.groupmembers.length;
+  	$('li.your-groups>a').each(function(index, value) {
+  		var group = value.getAttribute('data-group');
+  		if (data.groupname === group)
+  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+  	});
+  	// Increment recent groups members count (if there)
+  	$('li.recent-groups>a').each(function(index, value) {
+  		var group = value.getAttribute('data-group');
+  		if (data.groupname === group)
+  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+  	});
+
 		// Set local storage for being used when sending
 		localStorage.setItem('groupname', data.groupname);
 		localStorage.setItem('storyID', String(data.storyID));
@@ -383,17 +397,17 @@ function socketIO(data) {
 	  if (!alreadyAdded) {
 	  	// Increment group member count
 	  	count++;
-	  	// Increment your groups
+	  	// Increment your groups members count
 	  	$('li.your-groups>a').each(function(index, value) {
 	  		var group = value.getAttribute('data-group');
 	  		if (data.groupname === group)
-	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21);
+	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
 	  	});
-	  	// Increment recent groups (if there)
+	  	// Increment recent groups members count(if there)
 	  	$('li.recent-groups>a').each(function(index, value) {
 	  		var group = value.getAttribute('data-group');
 	  		if (data.groupname === group)
-	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21);
+	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
 	  	});
 	  	// Add new user to side nav bar
 	  	var $a = $('<a>').text(newUser);
