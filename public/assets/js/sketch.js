@@ -186,13 +186,25 @@ $(document).on("click", ".sketch", function() {
 			$nav.append($li);
 		}
 
-		// Call to get page function
-		getPage(data)
+		// Call to get page function if all group members are present
+		if (data.groupmembers.length === 4)
+			getPage(data)
+		else
+			addWaitingForMembers();
 
 	});
 
 	return false;
 });
+
+// =====================================
+// Add waiting for groupmembers ========
+// =====================================
+function addWaitingForMembers() {
+	var $h1 = $('<h1>').text('Waiting for group members to reach 4 to start...');
+	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
+  $('.container').append($canvasWrapper);
+}
 
 // =====================================
 // SKETCH SECTION ======================
@@ -332,7 +344,7 @@ function addCanvas(obj) {
 // Add waiting instead of canvas =======
 // =====================================
 function addWaiting(part) {
-	var $h1 = $('<h1>').text('Waiting for group member to finish part ' + part + ' sketch');
+	var $h1 = $('<h1>').text('Waiting for group member to finish part ' + part + ' sketch...');
 	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
   $('.container').append($canvasWrapper);
 }
@@ -346,6 +358,8 @@ var socket = io.connect();
 
 function socketIO(data) {
 
+	var count = data.groupmembers.length;
+
 	// Send username
 	socket.on(data.groupname + 'new user', function(newUser) {
 	  var alreadyAdded = false;
@@ -355,12 +369,19 @@ function socketIO(data) {
 	      alreadyAdded = true;
 	    }
 	  }
-	  // If if not already added
+	  // If not already added
 	  if (!alreadyAdded) {
+	  	// Increment group member count
+	  	count++;
+	  	// Add new user to side nav bar
 	  	var $a = $('<a>').text(newUser);
 			var $li = $('<li>').addClass('group-members').append($a);
 			$('.nav').append($li);
-	  }	  	
+			// If members is reaches 4
+	  	if (count === 4)
+	  		getPage(data);
+	  }  
+
 	});
 
 	// Listen for signal for next part
