@@ -4,20 +4,30 @@ Drawing app for the second group project of Rutgers Coding Bootcamp.
 ## Screenshots
 Include a one or two screenshots of main UI/UX points of your app and how it solves a problem
 
-```
-### Create a Story
+Login/Signup | Sketch
+-------------|--------
+![Login/Signup Form Image](/readme_images/login_signup.png?raw=true"login_signup.png") | ![Sketch Form Image](/readme_images/select_group.png?raw=true"select_group.png")
 
-![Alt text](/readme_images/customer01.jpg?raw=true "BamazonCustomer.js")
-```
+
+Sketch 1 | Sketch 2 | Sketch 3 | Sketch 4
+---------|----------|----------|---------
+![Sketch 1 Image](/readme_images/sketch.01.png?raw=true"sketch.01.png") | ![Sketch 2 Image](/readme_images/sketch.02.png?raw=true"sketch.02.png") | ![Sketch 3 Image](/readme_images/sketch.03.png?raw=true"sketch.03.png") | ![Sketch 4 Image](/readme_images/sketch.04.png?raw=true"sketch.04.png")
 
 ## Technologies used
 You can give a brief listing of the technologies you've learned and applied here
-- node.js
-- Express
-- Handblebars
+- Node
+    - Express
+    - Handlebars
+    - Sequelize
+    - Socketio
+    - Cookie Parser
+    - Body Parser
+    - Favicon
+    - Logger
+    - Method Override
+    - Passport
 - MySql
-- Sequelize
-- socketio
+- Lucidchart
 
 ## Getting Started
 
@@ -29,8 +39,8 @@ What to install and how for local development and testing purposes
 
 ```
 - node.js: visit node.js and download...
-- mongodb: npm install -g mongodb
 - mysqldb: brew install mysql
+- Storyboard: npm i
 ```
 
 ## Running the tests
@@ -40,15 +50,14 @@ Explain how to run the automated tests for this system (if applicable)
 ```
 To Start the Server:
 
-node ./bin/www
-
+npm serve
 ```
 
 ## Built With
 
-* Atom - Sublime Text is pretty cool too I guess
-* Balsamiq - Wireframe of choice 
-* RoboMongo - Because .pretty() everything is tedious
+* Sublime Text
+* Node Package Manager
+* Heroku
 
 ## Walk throughs of code
 For Project presentation, you can include snippets of code you found buggy, interesting, or are overall proud of here.  Try to limit the quantity and size to quick readable bits.
@@ -65,9 +74,11 @@ function awesomeThing() {
 
 ## Authors
 
-* **John Doe** - *Initial work* - [John Doe](https://github.com)
+* **Matthew Bajorek** - [Matthew Bajorek](https://github.com/mattbajorek)
+* **Edwin Rivera** - [Edwin Rivera](https://github.com/imdoingitlive)
+* **Stefanie Centi** - [Stefanie Centi](https://github.com/stefcenti)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/imdoingitlive/Storyboard/contributors) who participated in this project.
 
 ## License
 
