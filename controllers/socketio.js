@@ -17,15 +17,8 @@ var models = require('../models');
 // Socket io object to export
 var returnSocket = function(io) {
 
-	function socketIOEmit(groupname, newStoryID, story) {
-		io.sockets.emit(groupname + 'next story', {
-			storyID: newStoryID,
-			part: 1,
-			caption1: story.dataValues.caption1,
-			caption2: story.dataValues.caption2,
-			caption3: story.dataValues.caption3,
-			caption4: story.dataValues.caption4,
-		}); // io.sockets goes to all
+	function socketIOEmit(obj) {
+		io.sockets.emit(obj.groupname + 'next', obj); // io.sockets goes to all
 	}
 
 	io.on('connection', function(socket) {
@@ -66,38 +59,67 @@ var returnSocket = function(io) {
 
 						// Check if part is 4
 						var completed = group.dataValues.completed;
+						var storyID = group.dataValues.storyID;
 						var part = group.dataValues.part;
 
 						if (part === 4) {
 
-							// Increment completed by one and reset part
+							// Increment completed and storyID by one and reset part
 							group.updateAttributes({
 								completed: completed + 1,
+								storyID: storyID + 1,
 								part: 1
 							}).then(function() {
 
 								// Save new story ID
-								var newStoryID = completed + 2;
+								var newStoryID = storyID + 1;
 								// Find the next captions
 								models.Story.findOne({
 									where: {storyID: newStoryID}
 								}).then(function(nextStory) {
 
-									// If end of stories has been reached,
+									// If end of stories has been reached
 									if (nextStory === null) {
 
-										// Find first story
-										models.Story.findOne({
-											where: {storyID: 1}
-										}).then(function(firstStory) {
-											// Tells group to move to first story
-											socketIOEmit(groupname, 1, firstStory);
+										// Update story id back to 1
+										group.updateAttributes({
+											storyID: 1
+										}).then(function() {
+
+											// Find first story
+											models.Story.findOne({
+												where: {storyID: 1}
+											}).then(function(firstStory) {
+
+												// Tells group to move to first story
+												socketIOEmit({
+													groupname: groupname, 
+													storyID: 1, 
+													part: 1,
+													caption1: firstStory.dataValues.caption1,
+													caption2: firstStory.dataValues.caption2,
+													caption3: firstStory.dataValues.caption3,
+													caption4: firstStory.dataValues.caption4
+												});
+
+											});
+
 										});
 
-									} else {
-										// Tells group to move to next story
-										socketIOEmit(groupname, newStoryID, nextStory);
-									}									
+									} 
+
+									// Tells group to move to next story
+									else {
+										socketIOEmit({
+											groupname: groupname, 
+											storyID: newStoryID, 
+											part: 1,
+											caption1: nextStory.dataValues.caption1,
+											caption2: nextStory.dataValues.caption2,
+											caption3: nextStory.dataValues.caption3,
+											caption4: nextStory.dataValues.caption4
+										});
+									}
 
 								}).error(function(err) {
 							    console.log(err);
@@ -107,17 +129,22 @@ var returnSocket = function(io) {
 								console.log(err);
 							})
 
-						} else {
+						} 
+
+						// Tells group to move to next part
+						else {
+
 							// Increment the part by one
 							group.updateAttributes({
 								part: part + 1
 							}).then(function() {
 
 								// Tells group to move to next part
-								io.sockets.emit(groupname + 'next part', {
-									// storyID: completed + 1,
+								socketIOEmit({
+									groupname: groupname, 
+									storyID: storyID, 
 									part: part + 1
-								}); // io.sockets goes to all
+								});
 
 							}).error(function(err) {
 								console.log(err);

@@ -17,6 +17,7 @@ module.exports = function(req, res) {
 				groupname: groupname,
 				groupmembers: [],
 				completed: group.dataValues.completed,
+				storyID: group.dataValues.storyID,
 				part: group.dataValues.part
 			}
 
