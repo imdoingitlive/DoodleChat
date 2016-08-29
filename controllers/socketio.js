@@ -58,7 +58,7 @@ var returnSocket = function(io) {
 						var part = group.dataValues.part;
 
 						if (part === 4) {
-							
+
 							// Increment completed by one and reset part
 							group.updateAttributes({
 								completed: completed + 1,
@@ -89,6 +89,7 @@ var returnSocket = function(io) {
 							}).error(function(err) {
 								console.log(err);
 							})
+							
 						} else {
 							// Increment the part by one
 							group.updateAttributes({

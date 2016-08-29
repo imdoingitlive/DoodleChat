@@ -237,6 +237,7 @@ function getPage(data) {
 	      storyID: data.completed + 1
 	    }
 	    addCanvas(obj);
+	    sendListener();
 	  }    
 	  else
 	    addWaiting(data.part);
@@ -245,12 +246,53 @@ function getPage(data) {
 }
 
 // =====================================
+// Only allow send to be clicked once ==
+// =====================================
+function sendListener() {
+	$send = $('#send');
+	// Custom listener for sending
+  $send.on('click', function(e) {
+  	console.log('working');
+  	// Turn off listener
+  	$send.off('click');
+    // Save groupname, storyID, and part for img URL
+    var obj = {
+      groupname: localStorage.getItem('groupname'),
+      storyID: localStorage.getItem('storyID'),
+      part: localStorage.getItem('part')
+    }
+    sendIO(obj);
+    return false;
+  })
+}
+
+function sendIO(obj) {
+	// Get canvas element
+  var $el = document.getElementById("colors_sketch");
+  // Save background if part is not 1
+  if (obj.part !== '1') {
+    $el.getContext('2d').globalCompositeOperation = 'destination-over';
+    $el.getContext('2d').drawImage(bk, 0, 0);
+    $el.getContext('2d').globalCompositeOperation = 'source-over';
+  }
+  // Get MIME type
+  var mime = "image/png";
+  // Save dataURL
+  var dataURL = $el.toDataURL(mime);
+  obj.dataURL = dataURL;
+  console.log(obj)
+  // Send dataURL through socket
+  // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
+  return socket.emit('send sketch', obj);
+}
+
+// =====================================
 // Add canvas for drawing ==============
 // =====================================
 function addCanvas(obj) {
 
   // Add tools
-  var $done = $('<a>').attr('href','#colors_sketch').attr('data-send','png').css('width','100px').text('Done');
+  var $done = $('<a>').attr('href','#').attr('id','send').css('width','100px').text('Done');
   var $tools = $('<div>').attr('id','tools').append($done);
   // Add colors
   var colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'];
@@ -352,6 +394,7 @@ function socketIO(data) {
 	      storyID: Number(localStorage.getItem('storyID'))
 	    }
 	    addCanvas(obj);
+	    sendListener();
 	  }    
 	  else
 	    addWaiting(res.part);
@@ -390,6 +433,7 @@ function socketIO(data) {
 	      storyID: res.storyID
 	    }
 	    addCanvas(obj);
+	    sendListener();
 	  }    
 	  else
 	    addWaiting(res.part);
@@ -468,16 +512,6 @@ var Sketch;
           if ($(this).attr('data-download')) {
             sketch.download($(this).attr('data-download'));
           }
-          // Custom listener for sending
-          if ($(this).attr('data-send')) {
-            // Save groupname, storyID, and part for img URL
-            var obj = {
-              groupname: localStorage.getItem('groupname'),
-              storyID: localStorage.getItem('storyID'),
-              part: localStorage.getItem('part')
-            }
-            sketch.send($(this).attr('data-send'),obj);
-          }
           return false;
         });
       }
@@ -490,29 +524,6 @@ var Sketch;
       }
       mime = "image/" + format;
       return window.open(this.el.toDataURL(mime));
-    };
-    // Add custom prototype for sending
-    Sketch.prototype.send = function(format, obj) {
-      // Save background if part is not 1
-      if (obj.part !== '1') {
-        this.context.globalCompositeOperation = 'destination-over';
-        this.context.drawImage(bk, 0, 0);
-        this.context.globalCompositeOperation = 'source-over';
-      }
-      // Get MIME type
-      var mime;
-      format || (format = "png");
-      if (format === "jpg") {
-        format = "jpeg";
-      }
-      mime = "image/" + format;
-      // Save dataURL
-      var dataURL = this.el.toDataURL(mime);
-      obj.dataURL = dataURL;
-      console.log(obj)
-      // Send dataURL through socket
-      // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
-      return socket.emit('send sketch', obj);
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
