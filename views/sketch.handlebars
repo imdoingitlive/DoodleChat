@@ -13,7 +13,7 @@
     <!-- Your Groups -->
     <li class="active"><a><strong><i class="fa fa-users" aria-hidden="true"></i> Your Groups</strong></a></li>
     {{#each this.userGroups}}
-      <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
+      <li class="your-groups"><a data-group="{{this.groupname}}"><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
         <button class="btn btn-info sketch" data-group="{{this.groupname}}" type="button">Go <i class="fa fa-arrow-right" aria-hidden="true"></i></button>
       </a></li>
     {{/each}}  
@@ -23,7 +23,7 @@
     <!-- Recent Groups -->
     <li class="active"><a><strong><i class="fa fa-eye" aria-hidden="true"></i> Recent Groups</strong></a></li>
     {{#each this.recentGroups}}
-      <li><a><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
+      <li class="recent-groups"><a data-group="{{this.groupname}}"><span class="badge">{{this.totalusers}}/4</span> {{this.groupname}}
         {{#if this.joined}}
         {{else}}
           <button class="btn btn-info join-submit" data-group="{{this.groupname}}" type="button">Join</button>

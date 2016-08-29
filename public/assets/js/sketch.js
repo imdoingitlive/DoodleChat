@@ -383,6 +383,18 @@ function socketIO(data) {
 	  if (!alreadyAdded) {
 	  	// Increment group member count
 	  	count++;
+	  	// Increment your groups
+	  	$('li.your-groups>a').each(function(index, value) {
+	  		var group = value.getAttribute('data-group');
+	  		if (data.groupname === group)
+	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21);
+	  	});
+	  	// Increment recent groups (if there)
+	  	$('li.recent-groups>a').each(function(index, value) {
+	  		var group = value.getAttribute('data-group');
+	  		if (data.groupname === group)
+	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21);
+	  	});
 	  	// Add new user to side nav bar
 	  	var $a = $('<a>').text(newUser);
 			var $li = $('<li>').addClass('group-members').append($a);
@@ -400,48 +412,6 @@ function socketIO(data) {
 	  }  
 
 	});
-
-	// Listen for signal for next part
-	// socket.on(data.groupname + 'next', function(res) {
-
-	//   console.log(res)
-
-	//   // Clear update part
-	//   var $Part = $('#Part');
-	// 	$Part.html($Part.html().slice(0,-1) + ' ' + res.part);
-
-	//   // Empty canvas-wrapper
-	//   $('#canvas-wrapper').remove();
-
- //  	// Set storyID (as a safety) and part to new part
- //  	// localStorage.setItem('part', String(res.storyID));
- //  	localStorage.setItem('part', String(res.part));
-
-	  // // Switch statement for caption
-	  // var caption;
-	  // switch (res.part) {
-	  // 	// Get caption from local storage
-	  //   case 1: caption = localStorage.getItem('caption1'); break;
-	  //   case 2: caption = localStorage.getItem('caption2'); break;
-	  //   case 3: caption = localStorage.getItem('caption3'); break;
-	  //   case 4: caption = localStorage.getItem('caption4'); break;
-	  // }
-
-	//   // Check if canvas should be shown by comparing part number to array
-	//   if (data.username === data.groupmembers[res.part-1]) {
-	//     var obj = {
-	//       part: res.part,
-	//       caption: caption,
-	//       groupnameEncoded: encodeURIComponent(data.groupname),
-	//       storyID: Number(localStorage.getItem('storyID'))
-	//     }
-	//     addCanvas(obj);
-	//     sendListener();
-	//   }    
-	//   else
-	//     addWaiting(res.part);
-
-	// });
 
 	// Listen for signal for next story or part
 	socket.on(data.groupname + 'next', function(res) {
