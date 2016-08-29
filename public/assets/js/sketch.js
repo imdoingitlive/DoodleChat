@@ -163,7 +163,7 @@ $(document).on("click", ".sketch", function() {
 		var $row = $('<div>').addClass('row').attr('id','header');
 		// Loop through and create cols
 		for (var i in text) {
-			var $h1 = $('<h1>').html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
+			var $h1 = $('<h1>').attr('id',text[i]).html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
 			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h1);
 			$row.append($col);
 		}
@@ -201,6 +201,10 @@ $(document).on("click", ".sketch", function() {
 // Add waiting for groupmembers ========
 // =====================================
 function addWaitingForMembers() {
+	// Clear completed and part
+	$('#Completed').text('Completed:');
+	$('#Part').text('Part:');
+	// Add waiting
 	var $h1 = $('<h1>').text('Waiting for group members to reach 4 to start...');
 	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
   $('.container').append($canvasWrapper);
@@ -224,6 +228,9 @@ function getPage(data) {
 	$.post(baseURL + "/group/" + data.groupname +"/story", completedObj, function(res) {
 
 	  console.log(res)
+	  
+	  // Clear waiting for members
+	  $('#canvas-wrapper').remove();
 
 	  // Set local storage for captions
 		localStorage.setItem('caption1', res.caption1);
@@ -378,8 +385,12 @@ function socketIO(data) {
 			var $li = $('<li>').addClass('group-members').append($a);
 			$('.nav').append($li);
 			// If members is reaches 4
-	  	if (count === 4)
+	  	if (count === 4) {
+	  		// Fill in completed and part
+				$('#Completed').text('Completed: 0');
+				$('#Part').text('Part: 1');
 	  		getPage(data);
+	  	}
 	  }  
 
 	});
