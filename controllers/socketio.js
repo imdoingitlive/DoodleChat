@@ -17,6 +17,17 @@ var models = require('../models');
 // Socket io object to export
 var returnSocket = function(io) {
 
+	function socketIOEmit(groupname, newStoryID, story) {
+		io.sockets.emit(groupname + 'next story', {
+			storyID: newStoryID,
+			part: 1,
+			caption1: story.dataValues.caption1,
+			caption2: story.dataValues.caption2,
+			caption3: story.dataValues.caption3,
+			caption4: story.dataValues.caption4,
+		}); // io.sockets goes to all
+	}
+
 	io.on('connection', function(socket) {
 
 		// When sketch is sent, receive data and send to AWS
@@ -70,17 +81,23 @@ var returnSocket = function(io) {
 								// Find the next captions
 								models.Story.findOne({
 									where: {storyID: newStoryID}
-								}).then(function(stories) {
+								}).then(function(nextStory) {
 
-									// Tells group to move to next story
-									io.sockets.emit(groupname + 'next story', {
-										storyID: newStoryID,
-										part: 1,
-										caption1: stories.dataValues.caption1,
-										caption2: stories.dataValues.caption2,
-										caption3: stories.dataValues.caption3,
-										caption4: stories.dataValues.caption4,
-									}); // io.sockets goes to all
+									// If end of stories has been reached,
+									if (nextStory === null) {
+
+										// Find first story
+										models.Story.findOne({
+											where: {storyID: 1}
+										}).then(function(firstStory) {
+											// Tells group to move to first story
+											socketIOEmit(groupname, 1, firstStory);
+										});
+
+									} else {
+										// Tells group to move to next story
+										socketIOEmit(groupname, newStoryID, nextStory);
+									}									
 
 								}).error(function(err) {
 							    console.log(err);
@@ -89,7 +106,7 @@ var returnSocket = function(io) {
 							}).error(function(err) {
 								console.log(err);
 							})
-							
+
 						} else {
 							// Increment the part by one
 							group.updateAttributes({
