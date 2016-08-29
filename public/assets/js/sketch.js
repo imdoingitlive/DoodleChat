@@ -144,8 +144,34 @@ $(document).on("click", ".sketch", function() {
 		var count = data.groupmembers.length;
   	$('li.your-groups>a').each(function(index, value) {
   		var group = value.getAttribute('data-group');
-  		if (data.groupname === group)
+  		if (data.groupname === group) {
+  			console.log(value.children[1]);
   			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+  			// Remove button
+  			value.children[1].remove();
+  		} 
+  		// Add button if button is not there
+  		else {
+  			if (value.children.length === 1) {
+  				// Create button node
+  				var button = document.createElement("button");
+  				button.classList.add("btn");
+  				button.classList.add("btn-info");
+  				button.classList.add("sketch");
+  				button.setAttribute("data-group", group);
+  				// Create i node
+  				var i = document.createElement("i");
+  				i.classList.add("fa");
+  				i.classList.add("fa-arrow-right");
+  				i.setAttribute("aria-hidden", "true");
+  				// Create text
+  				var text = document.createTextNode('Go ');
+  				// Appends
+  				button.appendChild(text);
+  				button.appendChild(i);
+  				value.appendChild(button);
+  			}
+  		}
   	});
   	// Increment recent groups members count (if there)
   	$('li.recent-groups>a').each(function(index, value) {
