@@ -5,20 +5,19 @@
     "password": "",
     "database": "my_schema",
     "dialect": "mysql"
-
   },
   "test": {
     "username": "root",
     "password": null,
-    "database": "database_test",
+    "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "xb6hxb1gibeby74m",
+    "password": "s3bo6uabb4nw3cid",
+    "database": "jby9su14pzuspw29",
+    "host": "d6q8diwwdmy5c9k9.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
     "dialect": "mysql"
   }
 }
