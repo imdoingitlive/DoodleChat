@@ -145,7 +145,8 @@ $(document).on("click", ".sketch", function() {
   	$('li.your-groups>a').each(function(index, value) {
   		var group = value.getAttribute('data-group');
   		if (data.groupname === group) {
-  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+  			// Update badge
+  			value.children[0].innerHTML = count + '/4';
   			// Remove button
   			value.children[1].remove();
   		} 
