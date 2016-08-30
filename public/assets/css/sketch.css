@@ -9,7 +9,8 @@ h1 {
 
 h2 {
   margin-bottom: 20px;
-  background-color: #428bca;
+  background-color: #ffb300;
+  border-color: #e6a100;
   border-radius: 5px;
   padding: 10px 15px;
   color: #fff;
@@ -47,13 +48,15 @@ h2 {
 
 .nav-sidebar .active a { 
   cursor: default;
-  background-color: #428bca; 
+  background-color: #ffb300;
+  border-color: #e6a100;
   color: #fff; 
   text-shadow: 1px 1px 1px #666; 
 }
 
 .nav-sidebar .active a:hover {
-  background-color: #428bca;   
+  background-color: #ffb300;
+  border-color: #e6a100;  
 }
 
 .nav-sidebar .text-overflow a,
@@ -75,6 +78,10 @@ h2 {
 
 .alert {
   margin: 4px;
+}
+
+.badge {
+  background-color: #555; 
 }
 
 /* Container */
@@ -166,4 +173,15 @@ h2 {
 #caption {
   position: absolute;
   top: 650px;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.orange {
+  color: #ffb300;
+  font-family: 'Aclonica', sans-serif;
 }
