@@ -357,7 +357,7 @@ function addCanvas(obj) {
   var $done = $('<a>').attr('href','#').attr('id','send').css('width','100px').text('Done');
   var $tools = $('<div>').attr('id','tools').append($done);
   // Add colors
-  var colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'];
+  var colors = ['#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#00f', '#7f00ff', '#f0f', '#8B4513', '#A9A9A9', '#000', '#fff'];
   for (var i=0; i<colors.length; i++) {
     var $a = $('<a>').attr('href','#colors_sketch').attr('data-color',colors[i]).css('width','10px').css('background',colors[i]);
     $tools.append($a);}

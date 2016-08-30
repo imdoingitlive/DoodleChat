@@ -132,13 +132,7 @@ h2 {
   width: 0;
 }
 
-
-
-#logout {
-  position: absolute;
-  left: 50px;
-  bottom: 50px;
-}
+/* Sketch */
 
 #canvas-wrapper {
 	position: relative;
@@ -158,6 +152,7 @@ h2 {
 
 #tools a {
   border: 1px solid black;
+  border-radius: 3px;
   height: 30px;
   line-height: 30px;
   padding: 0 10px;
