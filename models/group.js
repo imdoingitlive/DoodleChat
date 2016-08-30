@@ -14,6 +14,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
+    storyID: {
+      notNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 1
+    },
     part: {
       notNull: true,
       type: DataTypes.INTEGER,

@@ -4,8 +4,13 @@
 }
 
 h1 {
+  font-size: 50px;
+}
+
+h2 {
   margin-bottom: 20px;
-  background-color: #428bca;
+  background-color: #ffb300;
+  border-color: #e6a100;
   border-radius: 5px;
   padding: 10px 15px;
   color: #fff;
@@ -43,13 +48,15 @@ h1 {
 
 .nav-sidebar .active a { 
   cursor: default;
-  background-color: #428bca; 
+  background-color: #ffb300;
+  border-color: #e6a100;
   color: #fff; 
   text-shadow: 1px 1px 1px #666; 
 }
 
 .nav-sidebar .active a:hover {
-  background-color: #428bca;   
+  background-color: #ffb300;
+  border-color: #e6a100;  
 }
 
 .nav-sidebar .text-overflow a,
@@ -71,6 +78,10 @@ h1 {
 
 .alert {
   margin: 4px;
+}
+
+.badge {
+  background-color: #555; 
 }
 
 /* Container */
@@ -121,14 +132,7 @@ h1 {
   width: 0;
 }
 
-
-
-
-#logout {
-  position: absolute;
-  left: 50px;
-  bottom: 50px;
-}
+/* Sketch */
 
 #canvas-wrapper {
 	position: relative;
@@ -148,6 +152,7 @@ h1 {
 
 #tools a {
   border: 1px solid black;
+  border-radius: 3px;
   height: 30px;
   line-height: 30px;
   padding: 0 10px;
@@ -162,5 +167,10 @@ h1 {
 
 #caption {
   position: absolute;
-  top: 350px;
+  top: 650px;
+}
+
+.orange {
+  color: #ffb300;
+  font-family: 'Aclonica', sans-serif;
 }

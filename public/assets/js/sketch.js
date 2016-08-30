@@ -127,6 +127,7 @@ $(document).on("click", "#create-submit", function() {
 // =====================================
 // Go ==================================
 // =====================================
+var restartRound;
 $(document).on("click", ".sketch", function() {
 
 	// Get user input groupname
@@ -140,9 +141,56 @@ $(document).on("click", ".sketch", function() {
 
 		console.log(data)
 
+		// Clear timeout
+		clearTimeout(restartRound);
+
+		// Turn off sockets
+		socket.off(localStorage.getItem('groupname') + 'new user');
+		socket.off(localStorage.getItem('groupname') + 'next');
+
+		// Update your groups members count
+		var count = data.groupmembers.length;
+  	$('li.your-groups>a').each(function(index, value) {
+  		var group = value.getAttribute('data-group');
+  		if (data.groupname === group) {
+  			// Update badge
+  			value.children[0].innerHTML = count + '/4';
+  			// Remove button
+  			value.children[1].remove();
+  		} 
+  		// Add button if button is not there
+  		else {
+  			if (value.children.length === 1) {
+  				// Create button node
+  				var button = document.createElement("button");
+  				button.classList.add("btn");
+  				button.classList.add("btn-info");
+  				button.classList.add("sketch");
+  				button.setAttribute("data-group", group);
+  				// Create i node
+  				var i = document.createElement("i");
+  				i.classList.add("fa");
+  				i.classList.add("fa-arrow-right");
+  				i.setAttribute("aria-hidden", "true");
+  				// Create text
+  				var text = document.createTextNode('Go ');
+  				// Appends
+  				button.appendChild(text);
+  				button.appendChild(i);
+  				value.appendChild(button);
+  			}
+  		}
+  	});
+  	// Increment recent groups members count (if there)
+  	$('li.recent-groups>a').each(function(index, value) {
+  		var group = value.getAttribute('data-group');
+  		if (data.groupname === group)
+  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+  	});
+
 		// Set local storage for being used when sending
 		localStorage.setItem('groupname', data.groupname);
-		localStorage.setItem('storyID', String(data.completed+1));
+		localStorage.setItem('storyID', String(data.storyID));
 		localStorage.setItem('part', String(data.part));
 
 		// Start socketIO
@@ -163,8 +211,8 @@ $(document).on("click", ".sketch", function() {
 		var $row = $('<div>').addClass('row').attr('id','header');
 		// Loop through and create cols
 		for (var i in text) {
-			var $h1 = $('<h1>').html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
-			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h1);
+			var $h2 = $('<h2>').attr('id',text[i]).html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
+			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h2);
 			$row.append($col);
 		}
 		// Add header to container
@@ -186,13 +234,31 @@ $(document).on("click", ".sketch", function() {
 			$nav.append($li);
 		}
 
-		// Call to get page function
-		getPage(data)
+		// Call to get page function if all group members are present
+		if (data.groupmembers.length === 4)
+			getPage(data);
+		else
+			addWaitingForMembers();
 
 	});
 
 	return false;
 });
+
+// =====================================
+// Add waiting for groupmembers ========
+// =====================================
+function addWaitingForMembers() {
+	// Clear completed and part
+	var $Completed = $('#Completed');
+	$Completed.html($Completed.html().slice(0,-1));
+	var $Part = $('#Part');
+	$Part.html($Part.html().slice(0,-1));
+	// Add waiting
+	var $h1 = $('<h1>').html('<i class="fa fa-quote-left" aria-hidden="true"></i> Waiting for group members to reach 4 to start... <i class="fa fa-quote-right" aria-hidden="true"></i>');
+	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
+  $('.container').append($canvasWrapper);
+}
 
 // =====================================
 // SKETCH SECTION ======================
@@ -203,17 +269,21 @@ $(document).on("click", ".sketch", function() {
 // =====================================
 function getPage(data) {
 
-	// Make completed obj to send
-	var completedObj = {
-	  completed: data.completed
+	// Make story obj to send
+	var storyObj = {
+	  storyID: data.storyID
 	};
 
 	// AJAX get the page 
-	$.post(baseURL + "/group/" + data.groupname +"/story", completedObj, function(res) {
+	$.post(baseURL + "/group/" + data.groupname +"/story", storyObj, function(res) {
 
 	  console.log(res)
 
+	  // Clear waiting for members
+	  $('#canvas-wrapper').remove();
+
 	  // Set local storage for captions
+	  localStorage.setItem('storyID', res.storyID);
 		localStorage.setItem('caption1', res.caption1);
 		localStorage.setItem('caption2', res.caption2);
 		localStorage.setItem('caption3', res.caption3);
@@ -222,10 +292,10 @@ function getPage(data) {
 	  // Switch statement for caption
 	  var caption;
 	  switch (data.part) {
-	    case 1: caption = res.caption1; break;
-	    case 2: caption = res.caption2; break;
-	    case 3: caption = res.caption3; break;
-	    case 4: caption = res.caption4; break;
+	    case 1: caption = res.caption1 + '...'; break;
+	    case 2: caption = '...' + res.caption2 + '...'; break;
+	    case 3: caption = '...' + res.caption3 + '...'; break;
+	    case 4: caption = '...' + res.caption4; break;
 	  }
 
 	  // Check if canvas should be shown by comparing part number to array
@@ -234,9 +304,10 @@ function getPage(data) {
 	      part: data.part,
 	      caption: caption,
 	      groupnameEncoded: encodeURIComponent(data.groupname),
-	      storyID: data.completed + 1
+	      storyID: data.storyID
 	    }
 	    addCanvas(obj);
+	    sendListener();
 	  }    
 	  else
 	    addWaiting(data.part);
@@ -245,15 +316,56 @@ function getPage(data) {
 }
 
 // =====================================
+// Only allow send to be clicked once ==
+// =====================================
+function sendListener() {
+	$send = $('#send');
+	// Custom listener for sending
+  $send.on('click', function(e) {
+  	console.log('working');
+  	// Turn off listener
+  	$send.off('click');
+    // Save groupname, storyID, and part for img URL
+    var obj = {
+      groupname: localStorage.getItem('groupname'),
+      storyID: localStorage.getItem('storyID'),
+      part: localStorage.getItem('part')
+    }
+    sendIO(obj);
+    return false;
+  })
+}
+
+function sendIO(obj) {
+	// Get canvas element
+  var $el = document.getElementById("colors_sketch");
+  // Save background if part is not 1
+  if (obj.part !== '1') {
+    $el.getContext('2d').globalCompositeOperation = 'destination-over';
+    $el.getContext('2d').drawImage(bk, 0, 0);
+    $el.getContext('2d').globalCompositeOperation = 'source-over';
+  }
+  // Get MIME type
+  var mime = "image/png";
+  // Save dataURL
+  var dataURL = $el.toDataURL(mime);
+  obj.dataURL = dataURL;
+  console.log(obj)
+  // Send dataURL through socket
+  // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
+  return socket.emit('send sketch', obj);
+}
+
+// =====================================
 // Add canvas for drawing ==============
 // =====================================
 function addCanvas(obj) {
 
   // Add tools
-  var $done = $('<a>').attr('href','#colors_sketch').attr('data-send','png').css('width','100px').text('Done');
+  var $done = $('<a>').attr('href','#').attr('id','send').css('width','100px').text('Done');
   var $tools = $('<div>').attr('id','tools').append($done);
   // Add colors
-  var colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'];
+  var colors = ['#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#00f', '#7f00ff', '#f0f', '#8B4513', '#A9A9A9', '#000', '#fff'];
   for (var i=0; i<colors.length; i++) {
     var $a = $('<a>').attr('href','#colors_sketch').attr('data-color',colors[i]).css('width','10px').css('background',colors[i]);
     $tools.append($a);}
@@ -265,10 +377,10 @@ function addCanvas(obj) {
   }
 
   // Add caption
-  var $caption = $('<h1>').attr('id','caption').text(obj.caption);
+  var $caption = $('<h1>').attr('id','caption').html('<i class="fa fa-quote-left" aria-hidden="true"></i> ' + obj.caption + ' <i class="fa fa-quote-right" aria-hidden="true"></i>');
 
   // Add canvas
-  var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
+  var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','600');
   var $canvasHolder = $('<div>').attr('id','canvas').append($canvas).append($caption);
   
   // Only add image back if the part is not first
@@ -290,7 +402,7 @@ function addCanvas(obj) {
 // Add waiting instead of canvas =======
 // =====================================
 function addWaiting(part) {
-	var $h1 = $('<h1>').text('Waiting for group member to finish part ' + part + ' sketch');
+	var $h1 = $('<h1>').html('<i class="fa fa-quote-left" aria-hidden="true"></i> Waiting for group member to finish part ' + part + ' sketch... <i class="fa fa-quote-right" aria-hidden="true"></i>');
 	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
   $('.container').append($canvasWrapper);
 }
@@ -304,6 +416,8 @@ var socket = io.connect();
 
 function socketIO(data) {
 
+	var count = data.groupmembers.length;
+
 	// Send username
 	socket.on(data.groupname + 'new user', function(newUser) {
 	  var alreadyAdded = false;
@@ -313,90 +427,131 @@ function socketIO(data) {
 	      alreadyAdded = true;
 	    }
 	  }
-	  // If if not already added
+	  // If not already added
 	  if (!alreadyAdded) {
+	  	// Increment group member count
+	  	count++;
+	  	// Increment your groups members count
+	  	$('li.your-groups>a').each(function(index, value) {
+	  		var group = value.getAttribute('data-group');
+	  		if (data.groupname === group)
+	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+	  	});
+	  	// Increment recent groups members count(if there)
+	  	$('li.recent-groups>a').each(function(index, value) {
+	  		var group = value.getAttribute('data-group');
+	  		if (data.groupname === group)
+	  			value.innerHTML = value.innerHTML.slice(0,20) + count + value.innerHTML.slice(21); // number accounts for span element
+	  	});
+	  	// Add new user to side nav bar
 	  	var $a = $('<a>').text(newUser);
 			var $li = $('<li>').addClass('group-members').append($a);
 			$('.nav').append($li);
-	  }	  	
+			// If members is reaches 4
+	  	if (count === 4) {
+				// Fill in completed and part
+				var $Completed = $('#Completed');
+				$Completed.html($Completed.html().slice(0,-1) + ' 0');
+				var $Part = $('#Part');
+				$Part.html($Part.html().slice(0,-1) + ' 1');
+				// Get page
+	  		getPage(data);
+	  	}
+	  }  
+
 	});
 
-	// Listen for signal for next part
-	socket.on(data.groupname + 'next part', function(res) {
+	// Listen for signal for next story or part
+	socket.on(data.groupname + 'next', function(res) {
 
 	  console.log(res)
 
 	  // Empty canvas-wrapper
-	  $('#canvas-wrapper').remove();
+	  $canvasWrapper = $('#canvas-wrapper').remove();
 
-  	// Set storyID (as a safety) and part to new part
-  	// localStorage.setItem('part', String(res.storyID));
+	  // Get local storage storyID
+  	var finishedStoryID = localStorage.getItem('storyID');
+	  
+  	// Set local storage for storyID to new storyID and part
+  	localStorage.setItem('storyID', String(res.storyID));
   	localStorage.setItem('part', String(res.part));
 
-	  // Switch statement for caption
+  	// Get caption
 	  var caption;
-	  switch (res.part) {
-	  	// Get caption from local storage
-	    case 1: caption = localStorage.getItem('caption1'); break;
-	    case 2: caption = localStorage.getItem('caption2'); break;
-	    case 3: caption = localStorage.getItem('caption3'); break;
-	    case 4: caption = localStorage.getItem('caption4'); break;
-	  }
 
-	  // Check if canvas should be shown by comparing part number to array
+	  // If new story get new caption
+  	if (res.caption1) {
+  		// Stop listeners from being added again
+	  	listeners = false;
+  		// Update completed
+			var $Completed = $('#Completed');
+			var completed = Number($Completed.html().slice(-1)) + 1;
+			$Completed.html($Completed.html().slice(0,-1) + ' ' + completed);
+			// Get local storage captions
+			var caption1 = localStorage.getItem('caption1');
+			var caption2 = localStorage.getItem('caption2');
+			var caption3 = localStorage.getItem('caption3');
+			var caption4 = localStorage.getItem('caption4');
+			// Make String
+			var finalString = '<i class="fa fa-quote-left" aria-hidden="true"></i> ' + caption1 + ' ' +  caption2 +  ' ' + caption3 +  ' ' + caption4 + ' <i class="fa fa-quote-right" aria-hidden="true"></i>'
+  		var $h1 = $('<h1>').html(finalString);
+  		// Set local storage for captions
+			localStorage.setItem('caption1', res.caption1);
+			localStorage.setItem('caption2', res.caption2);
+			localStorage.setItem('caption3', res.caption3);
+			localStorage.setItem('caption4', res.caption4);
+			// Set caption to first
+			caption = res.caption1
+			// Show final image
+			var $img = $('<img>').attr('src','https://s3.amazonaws.com/project2storyboard/' + data.groupname  + '/' + finishedStoryID + '/4');
+			var $finalImage = $('<div>').attr('id','final-image').append($img).append($h1);
+			$('.container').append($finalImage);
+			// Set timeout for restart round
+			restartRound = setTimeout(function() {
+				$finalImage.remove();
+				restart(res, caption);
+			}, 8000)
+			//
+  	}
+
+  	// If new part get caption from local storage
+  	else {
+  		// Switch statement for caption
+		  switch (res.part) {
+		  	// Get caption from local storage
+		    case 1: caption = localStorage.getItem('caption1') + '...'; break;
+		    case 2: caption = '...' + localStorage.getItem('caption2') + '...'; break;
+		    case 3: caption = '...' + localStorage.getItem('caption3') + '...'; break;
+		    case 4: caption = '...' + localStorage.getItem('caption4'); break;
+		  }
+		  // Restart round immediately
+		  restart(res, caption);
+  	}	  
+
+	});
+
+	function restart(res, caption) {
+		// Update part
+		var $Part = $('#Part');
+		$Part.html($Part.html().slice(0,-1) + ' ' + res.part);
+		// Check if canvas should be shown by comparing part number to array
 	  if (data.username === data.groupmembers[res.part-1]) {
 	    var obj = {
 	      part: res.part,
 	      caption: caption,
 	      groupnameEncoded: encodeURIComponent(data.groupname),
-	      storyID: Number(localStorage.getItem('storyID'))
-	    }
-	    addCanvas(obj);
-	  }    
-	  else
-	    addWaiting(res.part);
-
-	});
-
-	// Listen for signal for next part or story
-	socket.on(data.groupname + 'next story', function(res) {
-
-	  console.log(res)
-
-	  // Stop listeners from being added again
-	  listeners = false;
-
-	  // Empty canvas-wrapper
-	  $('#canvas-wrapper').remove();
-
-  	// Set local storage for storyID to new storyID and part to 1
-  	localStorage.setItem('storyID', String(res.storyID));
-  	localStorage.setItem('part', '1');
-  	// Set local storage for captions
-		localStorage.setItem('caption1', res.caption1);
-		localStorage.setItem('caption2', res.caption2);
-		localStorage.setItem('caption3', res.caption3);
-		localStorage.setItem('caption4', res.caption4);
-
-		// Get caption
-	  var caption = res.caption1
-
-	  // Check if canvas should be shown by comparing part number to array
-	  if (data.username === data.groupmembers[data.part-1]) {
-	    var obj = {
-	      part: data.part,
-	      caption: caption,
-	      groupnameEncoded: encodeURIComponent(data.groupname),
 	      storyID: res.storyID
 	    }
 	    addCanvas(obj);
+	    sendListener();
 	  }    
 	  else
 	    addWaiting(res.part);
-
-	});
+	}
 
 }
+
+
 
 // =====================================
 // Sketch.js ===========================
@@ -468,16 +623,6 @@ var Sketch;
           if ($(this).attr('data-download')) {
             sketch.download($(this).attr('data-download'));
           }
-          // Custom listener for sending
-          if ($(this).attr('data-send')) {
-            // Save groupname, storyID, and part for img URL
-            var obj = {
-              groupname: localStorage.getItem('groupname'),
-              storyID: localStorage.getItem('storyID'),
-              part: localStorage.getItem('part')
-            }
-            sketch.send($(this).attr('data-send'),obj);
-          }
           return false;
         });
       }
@@ -490,29 +635,6 @@ var Sketch;
       }
       mime = "image/" + format;
       return window.open(this.el.toDataURL(mime));
-    };
-    // Add custom prototype for sending
-    Sketch.prototype.send = function(format, obj) {
-      // Save background if part is not 1
-      if (obj.part !== '1') {
-        this.context.globalCompositeOperation = 'destination-over';
-        this.context.drawImage(bk, 0, 0);
-        this.context.globalCompositeOperation = 'source-over';
-      }
-      // Get MIME type
-      var mime;
-      format || (format = "png");
-      if (format === "jpg") {
-        format = "jpeg";
-      }
-      mime = "image/" + format;
-      // Save dataURL
-      var dataURL = this.el.toDataURL(mime);
-      obj.dataURL = dataURL;
-      console.log(obj)
-      // Send dataURL through socket
-      // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
-      return socket.emit('send sketch', obj);
     };
     Sketch.prototype.set = function(key, value) {
       this[key] = value;
