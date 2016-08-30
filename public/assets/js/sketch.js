@@ -140,6 +140,10 @@ $(document).on("click", ".sketch", function() {
 
 		console.log(data)
 
+		// Turn off sockets
+		socket.off(localStorage.getItem('groupname') + 'new user');
+		socket.off(localStorage.getItem('groupname') + 'next');
+
 		// Update your groups members count
 		var count = data.groupmembers.length;
   	$('li.your-groups>a').each(function(index, value) {
@@ -458,13 +462,12 @@ function socketIO(data) {
 
 	  console.log(res)
 
-	  // Update part
-		var $Part = $('#Part');
-		$Part.html($Part.html().slice(0,-1) + ' ' + res.part);
-
 	  // Empty canvas-wrapper
-	  $('#canvas-wrapper').remove();
+	  $canvasWrapper = $('#canvas-wrapper').remove();
 
+	  // Get local storage storyID
+  	var finishedStoryID = localStorage.getItem('storyID');
+	  
   	// Set local storage for storyID to new storyID and part
   	localStorage.setItem('storyID', String(res.storyID));
   	localStorage.setItem('part', String(res.part));
@@ -480,6 +483,14 @@ function socketIO(data) {
 			var $Completed = $('#Completed');
 			var completed = Number($Completed.html().slice(-1)) + 1;
 			$Completed.html($Completed.html().slice(0,-1) + ' ' + completed);
+			// Get local storage captions
+			var caption1 = localStorage.getItem('caption1');
+			var caption2 = localStorage.getItem('caption2');
+			var caption3 = localStorage.getItem('caption3');
+			var caption4 = localStorage.getItem('caption4');
+			// Make String
+			var finalString = '<i class="fa fa-quote-left" aria-hidden="true"></i> ' + caption1 + ' ' +  caption2 +  ' ' + caption3 +  ' ' + caption4 + ' <i class="fa fa-quote-left" aria-hidden="true"></i>'
+  		var $h1 = $('<h1>').html(finalString);
   		// Set local storage for captions
 			localStorage.setItem('caption1', res.caption1);
 			localStorage.setItem('caption2', res.caption2);
@@ -487,6 +498,18 @@ function socketIO(data) {
 			localStorage.setItem('caption4', res.caption4);
 			// Set caption to first
 			caption = res.caption1
+			// Show final image
+			var $img = $('<img>').attr('src','https://s3.amazonaws.com/project2storyboard/' + data.groupname  + '/' + finishedStoryID + '/4');
+			var $finalImage = $('<div>').attr('id','final-image').append($img).append($h1);
+			$('.container').append($finalImage);
+			// Set timeout for restart round
+			window.setTimeout(function() {
+				if ($finalImage.length > 0) {
+					$finalImage.remove();
+					restart(res, caption);
+				}
+			}, 7000)
+			//
   	}
 
   	// If new part get caption from local storage
@@ -499,9 +522,17 @@ function socketIO(data) {
 		    case 3: caption = '...' + localStorage.getItem('caption3') + '...'; break;
 		    case 4: caption = '...' + localStorage.getItem('caption4'); break;
 		  }
+		  // Restart round immediately
+		  restart(res, caption);
   	}	  
 
-	  // Check if canvas should be shown by comparing part number to array
+	});
+
+	function restart(res, caption) {
+		// Update part
+		var $Part = $('#Part');
+		$Part.html($Part.html().slice(0,-1) + ' ' + res.part);
+		// Check if canvas should be shown by comparing part number to array
 	  if (data.username === data.groupmembers[res.part-1]) {
 	    var obj = {
 	      part: res.part,
@@ -514,10 +545,11 @@ function socketIO(data) {
 	  }    
 	  else
 	    addWaiting(res.part);
-
-	});
+	}
 
 }
+
+
 
 // =====================================
 // Sketch.js ===========================
