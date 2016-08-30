@@ -4,6 +4,10 @@
 }
 
 h1 {
+  font-size: 50px;
+}
+
+h2 {
   margin-bottom: 20px;
   background-color: #428bca;
   border-radius: 5px;
@@ -123,7 +127,6 @@ h1 {
 
 
 
-
 #logout {
   position: absolute;
   left: 50px;
@@ -162,5 +165,5 @@ h1 {
 
 #caption {
   position: absolute;
-  top: 350px;
+  top: 650px;
 }

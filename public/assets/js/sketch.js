@@ -203,8 +203,8 @@ $(document).on("click", ".sketch", function() {
 		var $row = $('<div>').addClass('row').attr('id','header');
 		// Loop through and create cols
 		for (var i in text) {
-			var $h1 = $('<h1>').attr('id',text[i]).html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
-			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h1);
+			var $h2 = $('<h2>').attr('id',text[i]).html('<span class="glyphicon glyphicon-' + glyphicon[i] + '" aria-hidden="true"></span> ' + text[i] + ': ' + info[i]);
+			var $col = $('<div>').addClass('col-md-4 col-lg-4').append($h2);
 			$row.append($col);
 		}
 		// Add header to container
@@ -247,7 +247,7 @@ function addWaitingForMembers() {
 	var $Part = $('#Part');
 	$Part.html($Part.html().slice(0,-1));
 	// Add waiting
-	var $h1 = $('<h1>').text('Waiting for group members to reach 4 to start...');
+	var $h1 = $('<h1>').html('<i class="fa fa-quote-left" aria-hidden="true"></i> Waiting for group members to reach 4 to start... <i class="fa fa-quote-right" aria-hidden="true"></i>');
 	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
   $('.container').append($canvasWrapper);
 }
@@ -284,10 +284,10 @@ function getPage(data) {
 	  // Switch statement for caption
 	  var caption;
 	  switch (data.part) {
-	    case 1: caption = res.caption1; break;
-	    case 2: caption = res.caption2; break;
-	    case 3: caption = res.caption3; break;
-	    case 4: caption = res.caption4; break;
+	    case 1: caption = res.caption1 + '...'; break;
+	    case 2: caption = '...' + res.caption2 + '...'; break;
+	    case 3: caption = '...' + res.caption3 + '...'; break;
+	    case 4: caption = '...' + res.caption4; break;
 	  }
 
 	  // Check if canvas should be shown by comparing part number to array
@@ -369,10 +369,10 @@ function addCanvas(obj) {
   }
 
   // Add caption
-  var $caption = $('<h1>').attr('id','caption').text(obj.caption);
+  var $caption = $('<h1>').attr('id','caption').html('<i class="fa fa-quote-left" aria-hidden="true"></i> ' + obj.caption + ' <i class="fa fa-quote-right" aria-hidden="true"></i>');
 
   // Add canvas
-  var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','300');
+  var $canvas = $('<canvas>').attr('id','colors_sketch').attr('width','800').attr('height','600');
   var $canvasHolder = $('<div>').attr('id','canvas').append($canvas).append($caption);
   
   // Only add image back if the part is not first
@@ -394,7 +394,7 @@ function addCanvas(obj) {
 // Add waiting instead of canvas =======
 // =====================================
 function addWaiting(part) {
-	var $h1 = $('<h1>').text('Waiting for group member to finish part ' + part + ' sketch...');
+	var $h1 = $('<h1>').html('<i class="fa fa-quote-left" aria-hidden="true"></i> Waiting for group member to finish part ' + part + ' sketch... <i class="fa fa-quote-right" aria-hidden="true"></i>');
 	var $canvasWrapper = $('<div>').attr('id','canvas-wrapper').append($h1);
   $('.container').append($canvasWrapper);
 }
@@ -494,10 +494,10 @@ function socketIO(data) {
   		// Switch statement for caption
 		  switch (res.part) {
 		  	// Get caption from local storage
-		    case 1: caption = localStorage.getItem('caption1'); break;
-		    case 2: caption = localStorage.getItem('caption2'); break;
-		    case 3: caption = localStorage.getItem('caption3'); break;
-		    case 4: caption = localStorage.getItem('caption4'); break;
+		    case 1: caption = localStorage.getItem('caption1') + '...'; break;
+		    case 2: caption = '...' + localStorage.getItem('caption2') + '...'; break;
+		    case 3: caption = '...' + localStorage.getItem('caption3') + '...'; break;
+		    case 4: caption = '...' + localStorage.getItem('caption4'); break;
 		  }
   	}	  
 
