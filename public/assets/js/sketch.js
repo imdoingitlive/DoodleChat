@@ -127,6 +127,7 @@ $(document).on("click", "#create-submit", function() {
 // =====================================
 // Go ==================================
 // =====================================
+var restartRound;
 $(document).on("click", ".sketch", function() {
 
 	// Get user input groupname
@@ -139,6 +140,9 @@ $(document).on("click", ".sketch", function() {
 	$.getJSON(baseURL + "/group/" + groupname, function(data) {
 
 		console.log(data)
+
+		// Clear timeout
+		clearTimeout(restartRound);
 
 		// Turn off sockets
 		socket.off(localStorage.getItem('groupname') + 'new user');
@@ -489,7 +493,7 @@ function socketIO(data) {
 			var caption3 = localStorage.getItem('caption3');
 			var caption4 = localStorage.getItem('caption4');
 			// Make String
-			var finalString = '<i class="fa fa-quote-left" aria-hidden="true"></i> ' + caption1 + ' ' +  caption2 +  ' ' + caption3 +  ' ' + caption4 + ' <i class="fa fa-quote-left" aria-hidden="true"></i>'
+			var finalString = '<i class="fa fa-quote-left" aria-hidden="true"></i> ' + caption1 + ' ' +  caption2 +  ' ' + caption3 +  ' ' + caption4 + ' <i class="fa fa-quote-right" aria-hidden="true"></i>'
   		var $h1 = $('<h1>').html(finalString);
   		// Set local storage for captions
 			localStorage.setItem('caption1', res.caption1);
@@ -503,12 +507,10 @@ function socketIO(data) {
 			var $finalImage = $('<div>').attr('id','final-image').append($img).append($h1);
 			$('.container').append($finalImage);
 			// Set timeout for restart round
-			window.setTimeout(function() {
-				if ($finalImage.length > 0) {
-					$finalImage.remove();
-					restart(res, caption);
-				}
-			}, 7000)
+			restartRound = setTimeout(function() {
+				$finalImage.remove();
+				restart(res, caption);
+			}, 8000)
 			//
   	}
 
