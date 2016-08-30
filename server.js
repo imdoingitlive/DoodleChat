@@ -26,11 +26,22 @@ app.use(bodyParser.urlencoded({ // body parser for reading body requests
 }));
 app.use(methodOverride('_method')); // Override with POST having ?_method=DELETE
 
-// Set up view engine
+// Require handlebars
 var exphbs = require('express-handlebars');
-app.engine('handlebars', exphbs({
-	defaultLayout: 'main'
-}));
+// Create `ExpressHandlebars` instance with a default layout.
+var hbs = exphbs.create({
+  defaultLayout: 'main',
+  // Specify helpers which are only registered on this instance.
+  helpers: {
+    section: function(name, options){
+      if(!this._sections) this._sections = {};
+      this._sections[name] = options.fn(this);
+      return null;
+    }
+  }
+});
+// Set up view engine
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 // Required for passport
