@@ -2,7 +2,6 @@
 Drawing app for the second group project of Rutgers Coding Bootcamp.
 
 ## Screenshots
-Include a one or two screenshots of main UI/UX points of your app and how it solves a problem
 
 Login/Signup | Sketch
 -------------|--------
@@ -18,7 +17,6 @@ Final
 ![Final Image](/readme_images_2/finalEdit.png?raw=true"finalEdit.png")
 
 ## Technologies used
-You can give a brief listing of the technologies you've learned and applied here
 - Node.JS
     - Express
     - Handlebars
@@ -34,10 +32,6 @@ You can give a brief listing of the technologies you've learned and applied here
 - MySql
 - Lucidchart
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
 ### Prerequisities
 
 What to install and how for local development and testing purposes
@@ -45,16 +39,18 @@ What to install and how for local development and testing purposes
 ```
 - node.js: visit node.js and download...
 - mysqldb: brew install mysql
-- Storyboard: npm i
 ```
 
-## Running the tests
+## Getting Started
 
-Explain how to run the automated tests for this system (if applicable)
+When you download the repo, run the following command to get all the dependencies
 
+```
+npm i
 ```
 To Start the Server:
 
+```
 npm run serve
 ```
 
@@ -158,5 +154,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Acknowledgments
 
 * Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* All those times in elementary school where you tried to play this game on pieces of paper
