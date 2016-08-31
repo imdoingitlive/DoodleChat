@@ -120,7 +120,7 @@ models.Group.findAll({
 
         .then(function(results) {
 
-            // If no result, not used yet
+            // If no result, user is not in group
             if (results.length === 0)
                 obj.joined = false;
             else
