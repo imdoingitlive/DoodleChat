@@ -53,7 +53,7 @@ $(document).on("click", "#find-submit", function() {
 $(document).on("click", ".join-submit", function() {
 
 	// Get user input groupname
-	var groupname = $(".join-submit").attr("data-group");
+	var groupname = $(this).attr("data-group");
 	var obj = {
 		groupname: groupname
 	}

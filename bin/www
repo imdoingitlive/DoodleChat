@@ -20,7 +20,7 @@ app.set('port', process.env.PORT || 4000);
 
 // we sync the models with our db 
 // (thus creating the apropos tables)
-models.sequelize.sync().then(function() {
+models.sequelize.sync().then(function() { // {force: true}
 
 	// Create stories since force true deletes everything
   // require('../config/createStories')();
