@@ -30,6 +30,7 @@ Final
     - Method Override
     - Passport
 - MySql
+- Amazon S3
 - Lucidchart
 
 ### Prerequisities
@@ -54,7 +55,6 @@ npm run serve
 
 * Sublime Text
 * Node Package Manager
-* Heroku
 
 ## Deployed With
 
