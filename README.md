@@ -88,7 +88,7 @@ models.Group.findAll({
     // Set counter
     if (counter === undefined) counter = 0;
     if (counter >= recentGroups.length) {
-        cb()
+        cb() // Callback function to get out of recursive loop and continue
         return
     }
 
