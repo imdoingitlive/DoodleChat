@@ -18,7 +18,7 @@ require('./config/passport')(passport); // pass passport for configuration
 app.use(express.static(process.cwd() + '/public'));
 
 // Set up middleware
-// app.use(favicon(__dirname + '/public/favicon.ico')); // uncomment after placing your favicon in /public
+app.use(favicon(__dirname + '/public/favicon.ico')); // uncomment after placing your favicon in /public
 app.use(logger('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.urlencoded({ // body parser for reading body requests
