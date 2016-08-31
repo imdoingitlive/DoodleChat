@@ -34,8 +34,6 @@ Final
 
 ### Prerequisities
 
-What to install and how for local development and testing purposes
-
 - Node.JS - visit nodejs.org and download...
 - MySql: brew install mysql (Mac) or visit mysql.com for MSI (Windows)
 
