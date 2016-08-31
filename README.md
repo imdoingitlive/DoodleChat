@@ -15,12 +15,12 @@ Sketch 1 | Sketch 2 | Sketch 3 | Sketch 4
 
 ## Technologies used
 You can give a brief listing of the technologies you've learned and applied here
-- Node
+- Node.JS
     - Express
     - Handlebars
     - Sequelize
     - Socketio
-    - Sketch
+    - Sketch.JS
     - Cookie Parser
     - Body Parser
     - Favicon
@@ -51,7 +51,7 @@ Explain how to run the automated tests for this system (if applicable)
 ```
 To Start the Server:
 
-npm serve
+npm run serve
 ```
 
 ## Built With
@@ -60,17 +60,83 @@ npm serve
 * Node Package Manager
 * Heroku
 
-## Walk throughs of code
-For Project presentation, you can include snippets of code you found buggy, interesting, or are overall proud of here.  Try to limit the quantity and size to quick readable bits.
+## Deployed With
 
-You can also show where you've used technologies you've learned and applied here.
+* Heroku
+* JawsDB
+
+## Walk throughs of code
+Here is a section of code that selects the 5 recent groups and checks to see if user is any of the groups so a join button can be added if they are not.
 
 ```
-function awesomeThing() {
-    //...
-    // try not to make it too long otherwise, point to filepaths:line numbers
-    //...
-}
+// Create obj for rendering
+var hbsObject = {
+    username: req.user.username,
+    recentGroups: [],
+    userGroups: []
+};
+
+// Find most recently created groups
+models.Group.findAll({
+    limit: 5,
+    order: 'id DESC'
+})
+
+// Create a loop through function that is called recursively
+.then(function loopThrough(recentGroups, counter) {
+
+    // Set counter
+    if (counter === undefined) counter = 0;
+    if (counter >= recentGroups.length) {
+        cb()
+        return
+    }
+
+    // Get groupname and totalusers
+    var obj = {
+        groupname: recentGroups[counter].dataValues.groupname,
+        totalusers: recentGroups[counter].dataValues.totalusers
+    }
+
+    // Check if total users is reached
+    if (obj.totalusers === 4) {
+
+        obj.joined = true; // Even though not actually joined, it does not display ability to join
+
+        // Push obj to recent groups
+        hbsObject.recentGroups.push(obj);
+
+        // Recursion
+        counter++;
+        loopThrough(recentGroups, counter)
+
+    } 
+    
+    // If user can be added
+    else {
+
+        // Check if user is in group
+        recentGroups[counter].getUsers({where : {username: req.user.username}})
+
+        .then(function(results) {
+
+            // If no result, not used yet
+            if (results.length === 0)
+                obj.joined = false;
+            else
+                obj.joined = true;
+
+            // Push obj to recent groups
+            hbsObject.recentGroups.push(obj);
+
+            // Recursion
+            counter++;
+            loopThrough(recentGroups, counter)
+
+        });
+    }               
+
+});
 ```
 
 ## Authors
