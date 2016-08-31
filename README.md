@@ -36,10 +36,8 @@ Final
 
 What to install and how for local development and testing purposes
 
-```
-- node.js: visit node.js and download...
-- mysqldb: brew install mysql
-```
+- Node.JS - visit nodejs.org and download...
+- MySql: brew install mysql (Mac) or visit mysql.com for MSI (Windows)
 
 ## Getting Started
 
