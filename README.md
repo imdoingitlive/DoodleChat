@@ -139,9 +139,9 @@ models.Group.findAll({
 
 ## Authors
 
-* **Matthew Bajorek** - [Matthew Bajorek](https://github.com/mattbajorek)
-* **Edwin Rivera** - [Edwin Rivera](https://github.com/imdoingitlive)
-* **Stefanie Centi** - [Stefanie Centi](https://github.com/stefcenti)
+* [Matthew Bajorek](https://github.com/mattbajorek)
+* [Edwin Rivera](https://github.com/imdoingitlive)
+* [Stefanie Centi](https://github.com/stefcenti)
 
 See also the list of [contributors](https://github.com/imdoingitlive/Storyboard/contributors) who participated in this project.
 
