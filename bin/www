@@ -20,13 +20,10 @@ app.set('port', process.env.PORT || 4000);
 
 // we sync the models with our db 
 // (thus creating the apropos tables)
-models.sequelize.sync({force: true}).then(function() {
+models.sequelize.sync().then(function() { // {force: true}
 
 	// Create stories since force true deletes everything
-  require('../config/createStories')();
-
-  // Create test users and group since force true deletes everything
-  require('../config/createUsersandGroup')();
+  // require('../config/createStories')();
 
 	// set our app to listen to the port we set above
   server.listen(app.get('port'), function() {

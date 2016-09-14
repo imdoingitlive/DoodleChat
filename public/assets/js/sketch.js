@@ -53,15 +53,13 @@ $(document).on("click", "#find-submit", function() {
 $(document).on("click", ".join-submit", function() {
 
 	// Get user input groupname
-	var groupname = $(".join-submit").attr("data-group");
+	var groupname = $(this).attr("data-group");
 	var obj = {
 		groupname: groupname
 	}
 
 	// AJAX post the group name 
 	$.post(baseURL + "/joingroup", obj, function(res) {
-
-		console.log(res)
 
 		// Remove previous messages and search groups
 		$("#find-group").empty();
@@ -138,8 +136,6 @@ $(document).on("click", ".sketch", function() {
 
 	// AJAX get the sketch information 
 	$.getJSON(baseURL + "/group/" + groupname, function(data) {
-
-		console.log(data)
 
 		// Clear timeout
 		clearTimeout(restartRound);
@@ -277,8 +273,6 @@ function getPage(data) {
 	// AJAX get the page 
 	$.post(baseURL + "/group/" + data.groupname +"/story", storyObj, function(res) {
 
-	  console.log(res)
-
 	  // Clear waiting for members
 	  $('#canvas-wrapper').remove();
 
@@ -322,7 +316,6 @@ function sendListener() {
 	$send = $('#send');
 	// Custom listener for sending
   $send.on('click', function(e) {
-  	console.log('working');
   	// Turn off listener
   	$send.off('click');
     // Save groupname, storyID, and part for img URL
@@ -350,7 +343,6 @@ function sendIO(obj) {
   // Save dataURL
   var dataURL = $el.toDataURL(mime);
   obj.dataURL = dataURL;
-  console.log(obj)
   // Send dataURL through socket
   // IMPORTANT BECAUSE IT SAVES WITH GROUPNAME, STORYID, AND PART
   return socket.emit('send sketch', obj);
@@ -463,8 +455,6 @@ function socketIO(data) {
 
 	// Listen for signal for next story or part
 	socket.on(data.groupname + 'next', function(res) {
-
-	  console.log(res)
 
 	  // Empty canvas-wrapper
 	  $canvasWrapper = $('#canvas-wrapper').remove();
