@@ -1,6 +1,8 @@
 # Storyboard
 Drawing app for the second group project of Rutgers Coding Bootcamp.
 
+LIVE PREVIEW --> https://storyboard-sketch.herokuapp.com/
+
 ## Screenshots
 
 Login/Signup | Sketch
